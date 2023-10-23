@@ -65,8 +65,8 @@ $$(document).on('page:init', '.page[data-name="opReg5"]', function (e) {
 
 })
 $$(document).on('page:init', '.page[data-name="loggedIn"]', function (e) {
-  $$("#userLoggedIn").text(emailSession)
   $$("#userLoggedIn").text(`${emailReg}. Gracias por registrarte`)
+  $$("#userLoggedIn").text(emailSession)
 })
 
 //Variables
@@ -126,12 +126,15 @@ function nuevoRegistro() {
         if (errorCode == "auth/email-already-in-use") {
           console.error(`El email: ${emailReg} ya se encuentra registrado. Utilice un nuevo email`);
         }
-      });
+      })
+    
   }
 }
 
 //Inicio de sesión con una cuenta existente
 function inicioSesion() {
+  
+  if (emailSession != "" && passwordSession != "") {
   emailSession = $$("#indexInputUser").val()
   passwordSession = $$("#indexInputPass").val()
 
@@ -144,10 +147,20 @@ function inicioSesion() {
 
     })
     .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      console.log(errorMessage);
-      console.log(error);
-      console.log(errorCode);
-    });
+      if(error.message == "The email address is badly formatted."){
+        $$("#cajaValidacion").html(`<h3>El email ingresado posee un formato incorrecto</h3>`)
+      }else{
+        errorJson = JSON.parse(error.message);
+        var errorCode = errorJson.error.code;
+        var errorMessage = errorJson.error.message;
+
+        if(errorMessage == `INVALID_LOGIN_CREDENTIALS`){
+          $$("#cajaValidacion").html("<h3>El email o la contraseña son incorrectos</h3>")
+        }else{
+          console.log(errorCode);
+        }
+      }
+    })
+    ;
+  }
 }

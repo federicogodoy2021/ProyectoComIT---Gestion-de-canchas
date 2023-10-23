@@ -66,7 +66,7 @@
                         </div>
                         
                         <!-- ----------------- Ingreso de Usuario, email o celular ----------------- -->
-                        <div class="grid grid-cols-1 grid-gap">
+                        <div id="cajaUsuario" class="grid grid-cols-1 grid-gap">
                             <div class="list list-strong-ios list-dividers-ios inset-ios">
                                 <ul>
                                     <li class="item-content item-input">
@@ -76,7 +76,7 @@
                                         <div class="item-inner">
                                           <div id="indexEtiqlUser" class="item-title item-label">Nombre de usuario, email o celular</div>
                                           <div class="item-input-wrap">
-                                            <input id="indexInputUser" type="text" placeholder="Ingrese su usuario">
+                                            <input id="indexInputUser" type="email" placeholder="Ingrese su usuario" required validate>
                                             <span class="input-clear-button"></span>
                                           </div>
                                         </div>
@@ -96,10 +96,12 @@
                                         <div class="item-inner">
                                             <div id="indexEtiqPass" class="item-title item-label">Password</div>
                                             <div class="item-input-wrap">
-                                              <input id="indexInputPass" type="password" name="password" id="demo-password-1" placeholder="Ingrese su contraseña" />
+                                              <input id="indexInputPass" type="password" name="password" id="demo-password-1" placeholder="Ingrese su contraseña" required validate/>
                                               <span class="input-clear-button"></span>
                                             </div>
                                         </div>
+                                    </li>
+                                    <li id="cajaValidacion">
                                     </li>
                                 </ul>
                             </div>
