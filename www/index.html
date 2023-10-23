@@ -22,7 +22,7 @@
     <!-- <meta name="theme-color" content="#2196f3"> -->
     <meta name="color-scheme" content="light dark">
 
-    <!-- Your app title -->
+    <!-- Your app title --> 
     <title>My App</title>
     <!-- Path to Framework7 Library CSS -->
     <link rel="stylesheet" href="lib/framework7/framework7-bundle.css">
@@ -110,11 +110,11 @@
                         </div>
                         <!-- -------------------- Boton de olvido de contraseña -------------------- -->
                         <div class="grid grid-cols-1 grid-gap">
-                            <a id="indexOlviPass" class="button button-small button-round button-outline" href=""><p>¿Olvidaste tu contraseña?</p></a>
+                            <a id="indexOlviPass" class="button button-small button-round button-outline" href="">¿Olvidaste tu contraseña?</a>
                         </div>
                         <!-- -------------------- Boton para crear nueva cuenta -------------------- -->
                         <div class="grid grid-cols-1 grid-gap">
-                            <a id="indexNuevaCuenta" class="button button-small button-round button-outline" href="/opReg1/"><p>Crear una cuenta nueva</p></a>
+                            <a id="indexNuevaCuenta" class="button button-small button-round button-outline">Crear una cuenta nueva</a>
                         </div>
                         <!-- FIN DE DEMO -->   
                     </div>
@@ -123,10 +123,21 @@
         </div>
     </div>
 
-
+    <!-- ------------------------ Servicios de firebase ------------------------ -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-auth.js"></script>
+<!--
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-firestore.js"></script>
+-->
+    <!-- ------------------------------ firebase ------------------------------- -->
+    <script src="./js/firebase.js"></script>
+    <!-- ------------------------------- Cordova ------------------------------- -->
     <script type="text/javascript" src="cordova.js"></script>
+    <!-- ------------------------------- F7 ------------------------------- -->
     <script type="text/javascript" src="lib/framework7/framework7-bundle.min.js"></script>
     <!--<script type="text/javascript" src="lib/framework7/framework7.js"></script>-->
+    <!-- ------------------------------- Mi app -------------------------------- -->
     <script type="text/javascript" src="js/my-app.js"></script>
 </body>
 
