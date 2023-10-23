@@ -808,3 +808,6 @@ code {
 .pie-chart svg {
   max-width: 320px;
 }
+.button{
+  margin: 5px;
+}
