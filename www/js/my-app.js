@@ -40,8 +40,7 @@ $$(document).on('page:init', function (e) {
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexNuevaCuenta").on('click', aP1Registro)
-  /* $$("#indexBtnIni").on('click', inicioSesion) */
-
+  $$("#indexBtnIni").on('click', inicioSesion)
 
 })
 // Option 2. Using live 'page:init' event handlers for each page
@@ -150,6 +149,7 @@ function inicioSesion() {
         var user = userCredential.user;
         console.log(`Bienvenidx ${emailSession}`);
         mainView.router.navigate('/loggedIn/');
+        registerVisit()
 
       })
       .catch((error) => {
@@ -184,7 +184,8 @@ function addUserToDB() {
     posicion: { latitud, longitud },
     deporteF: deporte,
     frecuenciaDeJuego: frecuenciaJuego,
-    role: "normal user"
+    role: "normal user",
+    cantVisitas: 1
   }
 
   var myId = emailReg
@@ -197,6 +198,30 @@ function addUserToDB() {
     .catch(function (error) {
       console.log("Error: " + error)
     })
+}
+
+//Funcion Registrar visita en Base de datos
+function registerVisit(){
+  var sessionId = emailSession
+  console.log(sessionId);
+
+  colUsers.where("email", "==", "fedegodoy@canchasrosario.com").get()
+  //colUsers.doc(sessionId).update({cantVisitas: 9})
+  .then(function (query) {
+    query.forEach(function (doc) {
+      quantVisits = doc.data().cantVisitas
+      console.log(quantVisits);
+      //console.log(quantVisits+1);
+
+      //Aumento cantidad de visistas y actualizo
+      colUsers.doc(sessionId).update({cantVisitas: quantVisits+1})
+
+      console.log("Documento actualizado")
+    })
+  })
+  .catch(function (error) {
+    console.log("Error: " + error)
+  })
 }
 
 //Función Obtener posición GPS
