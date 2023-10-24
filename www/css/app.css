@@ -811,3 +811,7 @@ code {
 .button{
   margin: 5px;
 }
+#paginas{
+  background-color: rgb(231, 125, 3);
+  opacity: 1 !important
+}

@@ -43,7 +43,7 @@
 
         
         <!-- Initial Page, "data-name" contains page name -->
-            <div data-name="index" class="page">
+            <div id="paginas" data-name="index" class="page">
                 <!-- Scrollable page content -->
                 <div class="page-content">
                     <div class="block">
@@ -66,7 +66,7 @@
                         </div>
                         
                         <!-- ----------------- Ingreso de Usuario, email o celular ----------------- -->
-                        <div id="cajaUsuario" class="grid grid-cols-1 grid-gap">
+                        <div id="cajaUsuario" class="grid grid-cols-1">
                             <div class="list list-strong-ios list-dividers-ios inset-ios">
                                 <ul>
                                     <li class="item-content item-input">
@@ -86,7 +86,7 @@
                         </div>
                         
                         <!-- ------------------------ Ingreso de contraseña ------------------------ -->
-                        <div class="grid grid-cols-1 grid-gap">
+                        <div class="grid grid-cols-1">
                             <div class="list list-strong-ios list-dividers-ios inset-ios">
                                 <ul>
                                     <li class="item-content item-input">
@@ -127,12 +127,14 @@
 
     <!-- ------------------------ Servicios de firebase ------------------------ -->
     <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <!-- ---------------------- Servicio de autenticación ---------------------- -->
     <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-auth.js"></script>
-<!--
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+    <!-- -------------------- Servicio de cloud firestore -------------------- -->
     <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-firestore.js"></script>
--->
-    <!-- ------------------------------ firebase ------------------------------- -->
+
+    <!--<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>-->
+
+    <!-- ------------------------------ Firebase Local------------------------------- -->
     <script src="./js/firebase.js"></script>
     <!-- ------------------------------- Cordova ------------------------------- -->
     <script type="text/javascript" src="cordova.js"></script>
