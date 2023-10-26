@@ -14,13 +14,13 @@ var app = new Framework7({
   },
   // Add default routes
   routes: [
-    { path: '/index/', url: 'index.html', },
-    { path: '/opReg1/', url: 'opReg1.html', },
-    { path: '/opReg2/', url: 'opReg2.html', },
-    { path: '/opReg3/', url: 'opReg3.html', },
-    { path: '/opReg4/', url: 'opReg4.html', },
-    { path: '/opReg5/', url: 'opReg5.html', },
-    { path: '/loggedIn/', url: 'loggedIn.html', },
+    { path: '/index/', url: 'index.html'},
+    { path: '/opReg1/', url: 'opReg1.html'},
+    { path: '/opReg2/', url: 'opReg2.html'},
+    { path: '/opReg3/', url: 'opReg3.html'},
+    { path: '/opReg4/', url: 'opReg4.html'},
+    { path: '/loggedIn/', url: 'loggedIn.html'},
+    { path: '/reserva/', url: 'reserva.html'}
   ]
   // ... other parameters
 });
@@ -57,24 +57,33 @@ $$(document).on('page:init', '.page[data-name="opReg3"]', function (e) {
 
 })
 $$(document).on('page:init', '.page[data-name="opReg4"]', function (e) {
-  $$("#op4RegBtnSig").on('click', aP5Registro)
-
-})
-$$(document).on('page:init', '.page[data-name="opReg5"]', function (e) {
   getPositionGPS()
-  $$("#op5RegBtnFin").on('click', nuevoRegistro)
+  $$("#op4RegBtnFin").on('click', nuevoRegistroUser)
 
 })
 $$(document).on('page:init', '.page[data-name="loggedIn"]', function (e) {
   $$("#userLoggedIn").text(`${emailReg}. Gracias por registrarte`)
   $$("#userLoggedIn").text(emailSession)
+  aPantReserva()
+})
+$$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
+  $$("#btnBuscar").on('click', consultaCanchas)
+  
 })
 
+/* ----------------------- -------------------------- ----------------------- */
+
 //Variables globales Datos
-var nombre, emailReg, emailSession, passwordReg, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username, latitud, longitud,
+//Usuarios
+var nombre, emailReg, emailSession, passwordReg, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username, latitud, longitud
+
 //Variables globales Colecciones
 db = firebase.firestore()
 var colUsers = db.collection("USERS")
+var colComplejos = db.collection("COMPLEJOS")
+var colReservas = db.collection("RESERVAS")
+
+/* ----------------------- -------------------------- ----------------------- */
 
 //Funciones
 //Pasar de pantalla donde comienza el paso 1 para registro de usuario
@@ -97,13 +106,16 @@ function aP3Registro() {
 function aP4Registro() {
   mainView.router.navigate("/opReg4/")
 }
-//Pasar de pantalla 5 en el registro de usuario
-function aP5Registro() {
-  mainView.router.navigate("/opReg5/")
+//Pasar a pantalla de reserva
+function aPantReserva() {
+  setTimeout(() =>{
+    mainView.router.navigate("/reserva/")
+
+  },3000)
 }
 
-//Registro de nueva cuenta
-function nuevoRegistro() {
+//Registro de nueva cuenta de usuario
+function nuevoRegistroUser() {
 
   if (emailReg != "" && passwordReg != "") {
     firebase.auth().createUserWithEmailAndPassword(emailReg, passwordReg)
@@ -113,11 +125,11 @@ function nuevoRegistro() {
         console.log("Bienvenid@!!! " + emailReg);
 
         //Guadadado de datos en variables
-        username = $$("#op5RegInputUser").val()
-        fechaNac = $$("#op4RegInputFecha").val()
-        localidad = $$("#op4RegInputLoca").val()
-        deporte = $$("#op4RegInputDeporte").val()
-        frecuenciaJuego = $$("#op4RegInputFrecuencia").val()
+        username = $$("#op4RegInputUser").val()
+        fechaNac = $$("#op3RegInputFecha").val()
+        localidad = $$("#op3RegInputLoca").val()
+        deporte = $$("#op3RegInputDeporte").val()
+        frecuenciaJuego = $$("#op3RegInputFrecuencia").val()
 
         addUserToDB()
 
@@ -171,7 +183,6 @@ function inicioSesion() {
   }
 }
 
-//Prueba base datos - Agregar user
 //Función de agregar usuario
 function addUserToDB() {
   var datos = {
@@ -205,13 +216,12 @@ function registerVisit(){
   var sessionId = emailSession
   console.log(sessionId);
 
-  colUsers.where("email", "==", "fedegodoy@canchasrosario.com").get()
-  //colUsers.doc(sessionId).update({cantVisitas: 9})
+  colUsers.where("email", "==", sessionId).get()
+
   .then(function (query) {
     query.forEach(function (doc) {
       quantVisits = doc.data().cantVisitas
       console.log(quantVisits);
-      //console.log(quantVisits+1);
 
       //Aumento cantidad de visistas y actualizo
       colUsers.doc(sessionId).update({cantVisitas: quantVisits+1})
@@ -247,4 +257,38 @@ function errorGPS(error) {
   console.log
   ('code: ' + error.code + '\n' +
   'message: ' + error.message + '\n');
+}
+
+/* ------ ------------------------------------------------------------- ----- */
+
+
+//Consulta de canchas disponibles
+
+function consultaCanchas (){
+  //Datos del formulario
+  resComplejo = $$("#reservaComplejo").val()
+  resDeporte = $$("#reservaDeporte").val()
+  resTipoCancha = $$("#reservaTipoCancha").val()
+  resFecha = $$("#reservaFecha").val()
+  resHora = $$("#reservaHora").val()
+
+  //Esquema de datos
+  var datosReserva = {
+    cliente: emailSession,
+    fechaElegida: resFecha,
+    deporteElegido: resDeporte,
+    horaElegida: resHora,
+    tipoDeCanchaElegida: resTipoCancha
+  }
+
+  //Id doc en DB
+  var idRes = emailSession
+  //Sembrado de datos de reserva en DB
+  colReservas.doc(idRes).set(datosReserva)
+    .then(function (docRef) {
+      console.log("Reserva creada con exito por " + idRes)
+    })
+    .catch(function (error) {
+      console.log("Error: " + error)
+    }) 
 }
