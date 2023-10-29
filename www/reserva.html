@@ -17,11 +17,10 @@
             <label>Complejo</label>
             <div class="item-input-wrap input-dropdown-wrap">
               <select id="reservaComplejo" placeholder="Elige el complejo">
-                <option value="Complejo 1">Complejo 1</option>
-                <option value="Complejo 2">Complejo 2</option>
-                <option value="Complejo 3">Complejo 3</option>
-                <option value="Complejo 4">Complejo 4</option>
-                <option value="Complejo 5">Complejo 5</option>
+                <option selected value="Todos">Todos</option>
+                <option value="complejo1">Complejo 1</option>
+                <option value="complejo2">Complejo 2</option>
+                <option value="complejo3">Complejo 3</option>
               </select>
             </div>
           </div>
@@ -35,11 +34,10 @@
             <label>Deporte</label>
             <div class="item-input-wrap input-dropdown-wrap">
               <select id="reservaDeporte" placeholder="Elige el deporte">
-                <option value="Deporte 1">Deporte 1</option>
-                <option value="Deporte 2">Deporte 2</option>
-                <option value="Deporte 3">Deporte 3</option>
-                <option value="Deporte 4">Deporte 4</option>
-                <option value="Deporte 5">Deporte 5</option>
+                <option selected value="---">---</option>
+                <option value="futbol">Futbol</option>
+                <option value="tenis">Tenis</option>
+                <option value="Paddel">Paddel</option>
               </select>
             </div>
           </div>
@@ -53,11 +51,10 @@
             <label>Tipo de cancha</label>
             <div class="item-input-wrap input-dropdown-wrap">
               <select id="reservaTipoCancha" placeholder="Elige el complejo">
-                <option value="Cancha 1">Cancha 1</option>
-                <option value="Cancha 2">Cancha 2</option>
-                <option value="Cancha 3">Cancha 3</option>
-                <option value="Cancha 4">Cancha 4</option>
-                <option value="Cancha 5">Cancha 5</option>
+                <option selected value="Todas">Todas</option>
+                <option value="1">Cancha 1</option>
+                <option value="2">Cancha 2</option>
+                <option value="3">Cancha 3</option>
               </select>
             </div>
           </div>
@@ -70,7 +67,7 @@
             <!-- ------------------------- Selección de fecha -------------------------- -->
             <label>Fecha</label>
             <div class="item-input-wrap">
-              <input id="reservaFecha" type="date" value="2023-10-30" placeholder="Elige la fecha">
+              <input id="reservaFecha" type="date" value="Fecha" placeholder="Elige la fecha">
             </div>
           </div>
         </li>
@@ -83,6 +80,7 @@
             <!-- -------------------------- Selección de hora -------------------------- -->
             <div class="item-input-wrap">
               <select id="reservaHora" placeholder="Elige el horario">
+                <option selected value="Todos">Cualquier horario</option>
                 <option value="01:00 AM">01:00 AM</option>            
                 <option value="02:00 AM">02:00 AM</option>            
                 <option value="03:00 AM">03:00 AM</option>            
@@ -117,6 +115,6 @@
     <!-- --------------------------- Botón Buscar --------------------------- -->
     <div class="grid grid-cols-1 grid-gap">
       <a  id="btnBuscar" class="button button-large button-fill button-preloader" class="list-button">Buscar</a>
-  </div>
+    </div>
   </div>
 </div>

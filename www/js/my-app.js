@@ -14,13 +14,14 @@ var app = new Framework7({
   },
   // Add default routes
   routes: [
-    { path: '/index/', url: 'index.html'},
-    { path: '/opReg1/', url: 'opReg1.html'},
-    { path: '/opReg2/', url: 'opReg2.html'},
-    { path: '/opReg3/', url: 'opReg3.html'},
-    { path: '/opReg4/', url: 'opReg4.html'},
-    { path: '/loggedIn/', url: 'loggedIn.html'},
-    { path: '/reserva/', url: 'reserva.html'}
+    { path: '/index/', url: 'index.html' },
+    { path: '/opReg1/', url: 'opReg1.html' },
+    { path: '/opReg2/', url: 'opReg2.html' },
+    { path: '/opReg3/', url: 'opReg3.html' },
+    { path: '/opReg4/', url: 'opReg4.html' },
+    { path: '/loggedIn/', url: 'loggedIn.html' },
+    { path: '/reserva/', url: 'reserva.html' },
+    { path: '/turnos/', url: 'turnos.html' }
   ]
   // ... other parameters
 });
@@ -67,8 +68,11 @@ $$(document).on('page:init', '.page[data-name="loggedIn"]', function (e) {
   aPantReserva()
 })
 $$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
-  $$("#btnBuscar").on('click', consultaCanchas)
-  
+  $$("#btnBuscar").on('click', buscarCancha)
+})
+$$(document).on('page:init', '.page[data-name="turnos"]', function (e) {
+
+
 })
 
 /* ----------------------- -------------------------- ----------------------- */
@@ -82,6 +86,9 @@ db = firebase.firestore()
 var colUsers = db.collection("USERS")
 var colComplejos = db.collection("COMPLEJOS")
 var colReservas = db.collection("RESERVAS")
+
+//Variables globales Reservas
+var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, horaTurnoDisponible
 
 /* ----------------------- -------------------------- ----------------------- */
 
@@ -108,10 +115,10 @@ function aP4Registro() {
 }
 //Pasar a pantalla de reserva
 function aPantReserva() {
-  setTimeout(() =>{
+  setTimeout(() => {
     mainView.router.navigate("/reserva/")
 
-  },3000)
+  }, 3000)
 }
 
 //Registro de nueva cuenta de usuario
@@ -212,26 +219,25 @@ function addUserToDB() {
 }
 
 //Funcion Registrar visita en Base de datos
-function registerVisit(){
+function registerVisit() {
   var sessionId = emailSession
-  console.log(sessionId);
 
   colUsers.where("email", "==", sessionId).get()
 
-  .then(function (query) {
-    query.forEach(function (doc) {
-      quantVisits = doc.data().cantVisitas
-      console.log(quantVisits);
+    .then(function (query) {
+      query.forEach(function (doc) {
+        quantVisits = doc.data().cantVisitas
+        console.log(quantVisits);
 
-      //Aumento cantidad de visistas y actualizo
-      colUsers.doc(sessionId).update({cantVisitas: quantVisits+1})
+        //Aumento cantidad de visistas y actualizo
+        colUsers.doc(sessionId).update({ cantVisitas: quantVisits + 1 })
 
-      console.log("Documento actualizado")
+        console.log("Documento actualizado")
+      })
     })
-  })
-  .catch(function (error) {
-    console.log("Error: " + error)
-  })
+    .catch(function (error) {
+      console.log("Error: " + error)
+    })
 }
 
 //Función Obtener posición GPS
@@ -255,16 +261,15 @@ function posicionGPS(position) {
 //Manejo de errores GPS
 function errorGPS(error) {
   console.log
-  ('code: ' + error.code + '\n' +
-  'message: ' + error.message + '\n');
+    ('code: ' + error.code + '\n' +
+      'message: ' + error.message + '\n');
 }
 
 /* ------ ------------------------------------------------------------- ----- */
 
 
-//Consulta de canchas disponibles
-
-function consultaCanchas (){
+//Guardado de datos de la reserva
+function guardarReserva() {
   //Datos del formulario
   resComplejo = $$("#reservaComplejo").val()
   resDeporte = $$("#reservaDeporte").val()
@@ -277,10 +282,10 @@ function consultaCanchas (){
     cliente: emailSession,
     fechaElegida: resFecha,
     deporteElegido: resDeporte,
-    horaElegida: resHora,
+    //horaElegida: resHora,
+    horaElegida: horaTurnoDisponible,
     tipoDeCanchaElegida: resTipoCancha
   }
-
   //Id doc en DB
   var idRes = emailSession
   //Sembrado de datos de reserva en DB
@@ -290,5 +295,74 @@ function consultaCanchas (){
     })
     .catch(function (error) {
       console.log("Error: " + error)
-    }) 
+    })
+}
+
+//Funcion realizar consulta de turno
+function buscarCancha() {
+
+  resComplejo = $$("#reservaComplejo").val()
+  resDeporte = $$("#reservaDeporte").val()
+  resTipoCancha = $$("#reservaTipoCancha").val()
+  resFecha = $$("#reservaFecha").val()
+  resHora = $$("#reservaHora").val()
+  mainView.router.navigate('/turnos/');
+
+  //Se filtran los turnos disponibles en base al complejo seleccionado
+  colComplejos.where("complejoNro", "==", resComplejo).get()
+
+    .then(function (query) {
+      //Se retornan los turnos disponibles
+      query.forEach(function (doc) {
+        var queryTurnos = doc.data().turnos
+        divTurnos = $$("#turnosDisponibles")
+
+        //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
+        for (i = 0; i < queryTurnos.length; i++) {
+          var turno = queryTurnos[i];
+          boton = $$(`<input type="button" id="turno" value="${turno}HS" class="button button-fill color-green"></input><br>`)
+          divTurnos.append(boton)
+          boton.data("valor", `${turno}`)
+          boton.on("click", function () {
+            var valor = $$(this).data("valor");
+
+            //Se guarda el valor del turno en una variable global
+            horaTurnoDisponible = valor
+            //Se toma el turno elegido
+            tomarTurno()
+          });
+        }
+
+      })
+
+    })
+    .catch(function (error) {
+      console.log("Error: " + error)
+    })
+}
+
+//Función para tomar un turno
+function tomarTurno() {
+  //Se filtran los turnos disponibles en base al complejo seleccionado
+  colComplejos.where("complejoNro", "==", resComplejo).get()
+
+
+    .then(function (query) {
+      //Se retornan los turnos disponibles
+      query.forEach(function (doc) {
+        var queryTurnos = doc.data().turnos
+
+        //Filtrado del array de turnos quitando el turno ya tomado
+        turnoOcupado = queryTurnos.filter(turno => turno !== horaTurnoDisponible)
+        //Se actualiza la base de datos eliminando el turno tomado
+        colComplejos.doc(resComplejo).update({ turnos: turnoOcupado });
+
+        console.log("Turnos disponibles actualizados")
+      })
+      //Se guardan los datos de la reserva con el turno tomado
+      guardarReserva()
+    })
+    .catch(function (error) {
+      console.log("Error: " + error)
+    })
 }

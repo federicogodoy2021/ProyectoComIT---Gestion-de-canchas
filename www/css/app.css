@@ -815,3 +815,6 @@ code {
   background-color: rgb(231, 125, 3);
   opacity: 1 !important
 }
+#turnosDisponibles{
+  margin: 0px;
+}
