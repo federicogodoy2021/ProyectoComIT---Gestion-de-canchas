@@ -17,7 +17,8 @@
             <label>Complejo</label>
             <div class="item-input-wrap input-dropdown-wrap">
               <select id="reservaComplejo" placeholder="Elige el complejo">
-                <option selected value="Todos">Todos</option>
+                <option selected value="---">Seleccione el complejo</option>
+                <option value="Todos">Todos</option>
                 <option value="complejo1">Complejo 1</option>
                 <option value="complejo2">Complejo 2</option>
                 <option value="complejo3">Complejo 3</option>
@@ -34,7 +35,7 @@
             <label>Deporte</label>
             <div class="item-input-wrap input-dropdown-wrap">
               <select id="reservaDeporte" placeholder="Elige el deporte">
-                <option selected value="---">---</option>
+                <option selected value="---">Seleccione un deporte</option>
                 <option value="futbol">Futbol</option>
                 <option value="tenis">Tenis</option>
                 <option value="Paddel">Paddel</option>
@@ -51,7 +52,8 @@
             <label>Tipo de cancha</label>
             <div class="item-input-wrap input-dropdown-wrap">
               <select id="reservaTipoCancha" placeholder="Elige el complejo">
-                <option selected value="Todas">Todas</option>
+                <option selected value="---">Seleccione una cancha</option>
+                <option value="Todas">Todas</option>
                 <option value="1">Cancha 1</option>
                 <option value="2">Cancha 2</option>
                 <option value="3">Cancha 3</option>
@@ -67,54 +69,16 @@
             <!-- ------------------------- Selección de fecha -------------------------- -->
             <label>Fecha</label>
             <div class="item-input-wrap">
-              <input id="reservaFecha" type="date" value="Fecha" placeholder="Elige la fecha">
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-media">
-            <i class="icon demo-list-icon"></i>
-          </div>
-          <div class="item-inner">
-            <label>Hora</label>
-            <!-- -------------------------- Selección de hora -------------------------- -->
-            <div class="item-input-wrap">
-              <select id="reservaHora" placeholder="Elige el horario">
-                <option selected value="Todos">Cualquier horario</option>
-                <option value="01:00 AM">01:00 AM</option>            
-                <option value="02:00 AM">02:00 AM</option>            
-                <option value="03:00 AM">03:00 AM</option>            
-                <option value="04:00 AM">04:00 AM</option>            
-                <option value="05:00 AM">05:00 AM</option>            
-                <option value="06:00 AM">06:00 AM</option>            
-                <option value="07:00 AM">07:00 AM</option>            
-                <option value="08:00 AM">08:00 AM</option>            
-                <option value="09:00 AM">09:00 AM</option>            
-                <option value="10:00 AM">10:00 AM</option>            
-                <option value="11:00 AM">11:00 AM</option>            
-                <option value="12:00 AM">12:00 AM</option>            
-                <option value="01:00 AM">01:00 AM</option>            
-                <option value="01:00 PM">01:00 PM</option>            
-                <option value="02:00 PM">02:00 PM</option>            
-                <option value="03:00 PM">03:00 PM</option>            
-                <option value="04:00 PM">04:00 PM</option>            
-                <option value="05:00 PM">05:00 PM</option>            
-                <option value="06:00 PM">06:00 PM</option>            
-                <option value="07:00 PM">07:00 PM</option>            
-                <option value="08:00 PM">08:00 PM</option>            
-                <option value="09:00 PM">09:00 PM</option>            
-                <option value="10:00 PM">10:00 PM</option>            
-                <option value="11:00 PM">11:00 PM</option>            
-                <option value="12:00 PM">12:00 PM</option>                      
-              </select>
+              <input id="reservaFecha" type="date" value="" placeholder="Elige la fecha">
             </div>
           </div>
         </li>
       </ul>
     </form>
+    <div class="grid grid-cols-1" id="cajaValidacionForm"></div>
     <!-- --------------------------- Botón Buscar --------------------------- -->
     <div class="grid grid-cols-1 grid-gap">
-      <a  id="btnBuscar" class="button button-large button-fill button-preloader" class="list-button">Buscar</a>
+      <a  id="btnBuscar" class="button button-large button-fill button-preloader" class="list-button">BUSCAR TURNOS DISPONIBLES</a>
     </div>
   </div>
 </div>

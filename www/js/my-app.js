@@ -21,7 +21,8 @@ var app = new Framework7({
     { path: '/opReg4/', url: 'opReg4.html' },
     { path: '/loggedIn/', url: 'loggedIn.html' },
     { path: '/reserva/', url: 'reserva.html' },
-    { path: '/turnos/', url: 'turnos.html' }
+    { path: '/turnos/', url: 'turnos.html' },
+    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html' }
   ]
   // ... other parameters
 });
@@ -31,6 +32,7 @@ var mainView = app.views.create('.view-main');
 // Handle Cordova Device Ready Event
 $$(document).on('deviceready', function () {
   console.log("Device is ready!");
+
 });
 
 // Option 1. Using one 'page:init' handler for all pages
@@ -71,8 +73,11 @@ $$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
   $$("#btnBuscar").on('click', buscarCancha)
 })
 $$(document).on('page:init', '.page[data-name="turnos"]', function (e) {
-
-
+})
+$$(document).on('page:init', '.page[data-name="confirmacionTurno"]', function (e) {
+  $$("#confirmacionTurno").text(`El turno fue seleccionado para jugar al ${resDeporte} el día ${resFecha} en el complejo ${resComplejo} a las ${horaTurno} Hs.`)
+  $$("#confirmacionMailTurno").text(`Le enviamos un email a ${emailSession} con los datos de la reserva`)
+  nuevaBusqueda()
 })
 
 /* ----------------------- -------------------------- ----------------------- */
@@ -86,9 +91,10 @@ db = firebase.firestore()
 var colUsers = db.collection("USERS")
 var colComplejos = db.collection("COMPLEJOS")
 var colReservas = db.collection("RESERVAS")
+var colTurnos = db.collection("TURNOS")
 
 //Variables globales Reservas
-var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, horaTurnoDisponible
+var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, horaTurno
 
 /* ----------------------- -------------------------- ----------------------- */
 
@@ -267,23 +273,108 @@ function errorGPS(error) {
 
 /* ------ ------------------------------------------------------------- ----- */
 
+//Funcion realizar consulta de turno
+function buscarCancha() {
 
-//Guardado de datos de la reserva
-function guardarReserva() {
-  //Datos del formulario
   resComplejo = $$("#reservaComplejo").val()
   resDeporte = $$("#reservaDeporte").val()
   resTipoCancha = $$("#reservaTipoCancha").val()
   resFecha = $$("#reservaFecha").val()
-  resHora = $$("#reservaHora").val()
+  console.log(resFecha);
+  
 
+  if (resComplejo !== "---" && resDeporte !== "---" && resTipoCancha !== "---" && resFecha !== "") {
+    mainView.router.navigate('/turnos/');
+    //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
+    colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
+      .then(function (result) {
+        //Se retornan los turnos disponibles
+        var turnos = []
+        result.forEach(function (doc) {
+          id = doc.id;
+          console.log(id);
+          turnos.push(doc.id)
+          query = doc.data()
+          console.log(query);
+          console.log(turnos);
+        })
+
+        if (turnos.length == 0) {
+          cajaFechaTurnos = $$("#cajaFechaTurnos")
+          cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
+        } else {
+          $$("#fechaTurno").text(`Turnos disponibles ${resFecha}`)
+          //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
+          for (i = 0; i < turnos.length; i++) {
+            divTurnos = $$("#turnosDisponibles")
+            var turno = turnos[i];
+            boton = $$(`<input type="button" id="turno" value="${turno}HS" class="button button-fill color-green"></input><br>`)
+            divTurnos.append(boton)
+            boton.data("valor", `${turno}`)
+            boton.on("click", function () {
+              var valor = $$(this).data("valor");
+              //Se guarda el valor del turno en una variable global
+              horaTurno = valor
+              //Se toma el turno elegido
+              tomarTurno()
+            })
+          }
+        }
+
+        console.log("promesa cumplida")
+      })
+      .catch(function (error) {
+        console.log("Error: " + error)
+      })
+  } else {
+    $$("#cajaValidacionForm").html("<h3>Por favor complete todos los campos del formulario</h3>")
+  }
+
+
+}
+
+//Función para volver a pantalla de reservas
+function nuevaBusqueda() {
+  setTimeout(() => {
+    mainView.router.navigate("/reserva/")
+  }, 4000)
+}
+
+//Función para tomar un turno
+function tomarTurno() {
+  //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
+  colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
+    .then(function (query) {
+
+      //Se retornan los turnos disponibles
+      query.forEach(function (documento) {
+        var queryTurnos = documento.data()
+        console.log(queryTurnos);
+        id = documento.id
+        console.log(id);
+        console.log(queryTurnos);
+
+      })
+      colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").doc(horaTurno).update({ estado: "ocupado" })
+      console.log("Turnos disponibles actualizados")
+      //Se guardan los datos de la reserva con el turno tomado
+      guardarReserva()
+      //Se pasa a la pantalla de confirmación del turno
+      mainView.router.navigate('/confirmacionTurno/')
+    })
+    .catch(function (error) {
+      console.log("Error: " + error)
+    })
+}
+
+//Guardado de datos de la reserva
+function guardarReserva() {
   //Esquema de datos
   var datosReserva = {
     cliente: emailSession,
     fechaElegida: resFecha,
     deporteElegido: resDeporte,
-    //horaElegida: resHora,
-    horaElegida: horaTurnoDisponible,
+    horaElegida: horaTurno,
     tipoDeCanchaElegida: resTipoCancha
   }
   //Id doc en DB
@@ -292,75 +383,6 @@ function guardarReserva() {
   colReservas.doc(idRes).set(datosReserva)
     .then(function (docRef) {
       console.log("Reserva creada con exito por " + idRes)
-    })
-    .catch(function (error) {
-      console.log("Error: " + error)
-    })
-}
-
-//Funcion realizar consulta de turno
-function buscarCancha() {
-
-  resComplejo = $$("#reservaComplejo").val()
-  resDeporte = $$("#reservaDeporte").val()
-  resTipoCancha = $$("#reservaTipoCancha").val()
-  resFecha = $$("#reservaFecha").val()
-  resHora = $$("#reservaHora").val()
-  mainView.router.navigate('/turnos/');
-
-  //Se filtran los turnos disponibles en base al complejo seleccionado
-  colComplejos.where("complejoNro", "==", resComplejo).get()
-
-    .then(function (query) {
-      //Se retornan los turnos disponibles
-      query.forEach(function (doc) {
-        var queryTurnos = doc.data().turnos
-        divTurnos = $$("#turnosDisponibles")
-
-        //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
-        for (i = 0; i < queryTurnos.length; i++) {
-          var turno = queryTurnos[i];
-          boton = $$(`<input type="button" id="turno" value="${turno}HS" class="button button-fill color-green"></input><br>`)
-          divTurnos.append(boton)
-          boton.data("valor", `${turno}`)
-          boton.on("click", function () {
-            var valor = $$(this).data("valor");
-
-            //Se guarda el valor del turno en una variable global
-            horaTurnoDisponible = valor
-            //Se toma el turno elegido
-            tomarTurno()
-          });
-        }
-
-      })
-
-    })
-    .catch(function (error) {
-      console.log("Error: " + error)
-    })
-}
-
-//Función para tomar un turno
-function tomarTurno() {
-  //Se filtran los turnos disponibles en base al complejo seleccionado
-  colComplejos.where("complejoNro", "==", resComplejo).get()
-
-
-    .then(function (query) {
-      //Se retornan los turnos disponibles
-      query.forEach(function (doc) {
-        var queryTurnos = doc.data().turnos
-
-        //Filtrado del array de turnos quitando el turno ya tomado
-        turnoOcupado = queryTurnos.filter(turno => turno !== horaTurnoDisponible)
-        //Se actualiza la base de datos eliminando el turno tomado
-        colComplejos.doc(resComplejo).update({ turnos: turnoOcupado });
-
-        console.log("Turnos disponibles actualizados")
-      })
-      //Se guardan los datos de la reserva con el turno tomado
-      guardarReserva()
     })
     .catch(function (error) {
       console.log("Error: " + error)
