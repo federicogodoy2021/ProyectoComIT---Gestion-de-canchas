@@ -22,7 +22,9 @@ var app = new Framework7({
     { path: '/loggedIn/', url: 'loggedIn.html' },
     { path: '/reserva/', url: 'reserva.html' },
     { path: '/turnos/', url: 'turnos.html' },
-    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html' }
+    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html' },
+    { path: '/seccionComplejos/', url: 'seccionComplejos.html' },
+    { path: '/turnosC/', url: 'turnosC.html' }
   ]
   // ... other parameters
 });
@@ -44,7 +46,6 @@ $$(document).on('page:init', function (e) {
 $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexNuevaCuenta").on('click', aP1Registro)
   $$("#indexBtnIni").on('click', inicioSesion)
-
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -79,12 +80,17 @@ $$(document).on('page:init', '.page[data-name="confirmacionTurno"]', function (e
   $$("#confirmacionMailTurno").text(`Le enviamos un email a ${emailSession} con los datos de la reserva`)
   nuevaBusqueda()
 })
+$$(document).on('page:init', '.page[data-name="seccionComplejos"]', function (e) {
+  $$("#gestionbtnBuscar").on('click', buscarturnosComp)
+})
+$$(document).on('page:init', '.page[data-name="turnosC"]', function (e) {
+})
 
 /* ----------------------- -------------------------- ----------------------- */
 
 //Variables globales Datos
 //Usuarios
-var nombre, emailReg, emailSession, passwordReg, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username, latitud, longitud
+var nombre, emailReg, emailSession, passwordReg, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username, latitud, longitud
 
 //Variables globales Colecciones
 db = firebase.firestore()
@@ -113,7 +119,6 @@ function aP2Registro() {
 function aP3Registro() {
   mainView.router.navigate("/opReg3/")
   passwordReg = $$("#op2RegInputPass").val()
-  console.log(passwordReg);
 }
 //Pasar de pantalla 4 en el registro de usuario
 function aP4Registro() {
@@ -173,9 +178,27 @@ function inicioSesion() {
         // Signed in
         var user = userCredential.user;
         console.log(`Bienvenidx ${emailSession}`);
-        mainView.router.navigate('/loggedIn/');
-        registerVisit()
 
+        //Validando Role
+        var sessionId = emailSession
+        colUsers.where("email", "==", sessionId).get()
+          .then(function (res) {
+            res.forEach(function (doc) {
+              roleSession = doc.data().role
+              userSession = doc.data().usuario
+
+              //Ingreso dependiendo del role de usuario
+              if (roleSession == "normal user") {
+                mainView.router.navigate('/loggedIn/');
+                registerVisit()
+              } else if (roleSession == "complejo")
+                console.log("ingreso como complejo");
+              mainView.router.navigate('/seccionComplejos/');
+            })
+          })
+          .catch(function (error) {
+            console.log("Error: " + error)
+          })
       })
       .catch((error) => {
         if (error.message == "The email address is badly formatted.") {
@@ -281,7 +304,7 @@ function buscarCancha() {
   resTipoCancha = $$("#reservaTipoCancha").val()
   resFecha = $$("#reservaFecha").val()
   console.log(resFecha);
-  
+
 
   if (resComplejo !== "---" && resDeporte !== "---" && resTipoCancha !== "---" && resFecha !== "") {
     mainView.router.navigate('/turnos/');
@@ -292,11 +315,8 @@ function buscarCancha() {
         var turnos = []
         result.forEach(function (doc) {
           id = doc.id;
-          console.log(id);
           turnos.push(doc.id)
           query = doc.data()
-          console.log(query);
-          console.log(turnos);
         })
 
         if (turnos.length == 0) {
@@ -387,4 +407,67 @@ function guardarReserva() {
     .catch(function (error) {
       console.log("Error: " + error)
     })
+}
+
+//Función para busqueda de turnos a modificar por el complejo
+
+//Funcion realizar consulta de turno
+function buscarturnosComp() {
+  resFechaGestion = $$("#gestionTurnosFecha").val()
+  console.log(resFechaGestion);
+
+
+  if (resFechaGestion !== "") {
+    mainView.router.navigate('/turnosC/');
+    console.log("entro al if2");
+    //Se filtran los turnos disponibles en base a la fecha seleccionada
+    colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
+      .then(function (result) {
+        //Se retornan los turnos disponibles
+        var turnos = []
+        result.forEach(function (doc) {
+          id = doc.id;
+          turnos.push(doc.id)
+          query = doc.data()
+        })
+
+        if (turnos.length == 0) {
+          cajaFechaTurnos = $$("#gestionCajaFechaTurnos")
+          cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
+        } else {
+          $$("#gestionFechaTurno").text(`Turnos disponibles ${resFechaGestion}`)
+          //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
+          for (i = 0; i < turnos.length; i++) {
+            divTurnos = $$("#gestionTurnosDisponibles")
+            var turno = turnos[i];
+            boton = $$(`<input type="button" id="turnoGestion" value="${turno}HS" class="button button-fill color-green"></input><br>`)
+            divTurnos.append(boton)
+            boton.data("valor", `${turno}`)
+            boton.on("click", function () {
+              var valor = $$(this).data("valor");
+              //Se guarda el valor del turno en una variable global
+              horaTurno = valor
+              $$("#gestionTurnosEliminar").html(`
+              <h2>Se va a eliminar el turno de las ${horaTurno}hs.</h2>
+              <a id="gestionBtnEliminar" class="button button-fill color-blue">Eliminar turno seleccionado</a>
+              `)
+
+              //Se toma el turno elegido
+              //tomarTurno()
+            })
+          }
+
+          $$("#gestionTurnosDisponibles").append("<h2>Seleccione el turno que desea eliminar</h2>")
+        }
+
+        console.log("promesa cumplida")
+      })
+      .catch(function (error) {
+        console.log("Error: " + error)
+      })
+  } else {
+    $$("#gestionCajaValidacionForm").html("<h3>Por favor complete todos los campos del formulario</h3>")
+  }
+
+
 }
