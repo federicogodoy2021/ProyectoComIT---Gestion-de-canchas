@@ -818,3 +818,21 @@ code {
 #turnosDisponibles{
   margin: 0px;
 }
+ul{
+  list-style: none;
+}
+#barraNav{
+  background-color: rgb(231, 125, 3);
+}
+.labelsForm{
+  margin: 0;
+}
+#cajaInputs{
+  margin: 15px;  
+}
+.colorFont{
+  color: rgba(245, 245, 220, 0.719);
+}
+a{
+  font-size: 10px;
+}

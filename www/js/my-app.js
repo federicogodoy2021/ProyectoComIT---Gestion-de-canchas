@@ -5,7 +5,7 @@ var app = new Framework7({
   // App root element
   root: '#app',
   // App Name
-  name: 'My App',
+  name: 'Canchas Rosario',
   // App id
   id: 'com.myapp.test',
   // Enable swipe panel
@@ -14,17 +14,18 @@ var app = new Framework7({
   },
   // Add default routes
   routes: [
-    { path: '/index/', url: 'index.html' },
-    { path: '/opReg1/', url: 'opReg1.html' },
-    { path: '/opReg2/', url: 'opReg2.html' },
-    { path: '/opReg3/', url: 'opReg3.html' },
-    { path: '/opReg4/', url: 'opReg4.html' },
-    { path: '/loggedIn/', url: 'loggedIn.html' },
-    { path: '/reserva/', url: 'reserva.html' },
-    { path: '/turnos/', url: 'turnos.html' },
-    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html' },
-    { path: '/seccionComplejos/', url: 'seccionComplejos.html' },
-    { path: '/turnosC/', url: 'turnosC.html' }
+    { path: '/index/', url: 'index.html',  options: {transition: 'f7-flip'}},
+    { path: '/opReg1/', url: 'opReg1.html',  options: {transition: 'f7-flip'}},
+    { path: '/opReg2/', url: 'opReg2.html',  options: {transition: 'f7-flip'}},
+    { path: '/opReg3/', url: 'opReg3.html',  options: {transition: 'f7-flip'}},
+    { path: '/opReg4/', url: 'opReg4.html',  options: {transition: 'f7-flip'}},
+    { path: '/loggedIn/', url: 'loggedIn.html',  options: {transition: 'f7-flip'}},
+    { path: '/loggedOut/', url: 'loggedOut.html',  options: {transition: 'f7-flip'}},
+    { path: '/reserva/', url: 'reserva.html',  options: {transition: 'f7-flip'}},
+    { path: '/turnos/', url: 'turnos.html',  options: {transition: 'f7-flip'}},
+    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html',  options: {transition: 'f7-flip'}},
+    { path: '/seccionComplejos/', url: 'seccionComplejos.html',  options: {transition: 'f7-flip'}},
+    { path: '/turnosC/', url: 'turnosC.html',  options: {transition: 'f7-flip'}},
   ]
   // ... other parameters
 });
@@ -40,6 +41,7 @@ $$(document).on('deviceready', function () {
 // Option 1. Using one 'page:init' handler for all pages
 $$(document).on('page:init', function (e) {
   // Do something here when page loaded and initialized
+  //navBarOpen()
 })
 
 // Option 2. Using live 'page:init' event handlers for each page
@@ -50,7 +52,6 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
   $$("#op1RegBtnSig").on('click', aP2Registro)
-
 })
 $$(document).on('page:init', '.page[data-name="opReg2"]', function (e) {
   $$("#op2RegBtnSig").on('click', aP3Registro)
@@ -84,6 +85,9 @@ $$(document).on('page:init', '.page[data-name="seccionComplejos"]', function (e)
   $$("#gestionbtnBuscar").on('click', buscarturnosComp)
 })
 $$(document).on('page:init', '.page[data-name="turnosC"]', function (e) {
+})
+$$(document).on('page:init', '.page[data-name="loggedOut"]', function (e) {
+  cierreSesión()
 })
 
 /* ----------------------- -------------------------- ----------------------- */
@@ -192,7 +196,6 @@ function inicioSesion() {
                 mainView.router.navigate('/loggedIn/');
                 registerVisit()
               } else if (roleSession == "complejo")
-                console.log("ingreso como complejo");
               mainView.router.navigate('/seccionComplejos/');
             })
           })
@@ -414,12 +417,9 @@ function guardarReserva() {
 //Funcion realizar consulta de turno
 function buscarturnosComp() {
   resFechaGestion = $$("#gestionTurnosFecha").val()
-  console.log(resFechaGestion);
-
 
   if (resFechaGestion !== "") {
     mainView.router.navigate('/turnosC/');
-    console.log("entro al if2");
     //Se filtran los turnos disponibles en base a la fecha seleccionada
     colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
       .then(function (result) {
@@ -468,6 +468,12 @@ function buscarturnosComp() {
   } else {
     $$("#gestionCajaValidacionForm").html("<h3>Por favor complete todos los campos del formulario</h3>")
   }
+}
 
-
+//Funcion para cierre de sesión y vuelta al index
+function cierreSesión() {
+  setTimeout(() => {
+    mainView.router.navigate("/index/")
+  }, 3000)
+  
 }
