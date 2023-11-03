@@ -14,18 +14,18 @@ var app = new Framework7({
   },
   // Add default routes
   routes: [
-    { path: '/index/', url: 'index.html',  options: {transition: 'f7-flip'}},
-    { path: '/opReg1/', url: 'opReg1.html',  options: {transition: 'f7-flip'}},
-    { path: '/opReg2/', url: 'opReg2.html',  options: {transition: 'f7-flip'}},
-    { path: '/opReg3/', url: 'opReg3.html',  options: {transition: 'f7-flip'}},
-    { path: '/opReg4/', url: 'opReg4.html',  options: {transition: 'f7-flip'}},
-    { path: '/loggedIn/', url: 'loggedIn.html',  options: {transition: 'f7-flip'}},
-    { path: '/loggedOut/', url: 'loggedOut.html',  options: {transition: 'f7-flip'}},
-    { path: '/reserva/', url: 'reserva.html',  options: {transition: 'f7-flip'}},
-    { path: '/turnos/', url: 'turnos.html',  options: {transition: 'f7-flip'}},
-    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html',  options: {transition: 'f7-flip'}},
-    { path: '/seccionComplejos/', url: 'seccionComplejos.html',  options: {transition: 'f7-flip'}},
-    { path: '/turnosC/', url: 'turnosC.html',  options: {transition: 'f7-flip'}},
+    { path: '/index/', url: 'index.html',  options: {transition: 'f7-cover'}},
+    { path: '/opReg1/', url: 'opReg1.html',  options: {transition: 'f7-cover'}},
+    { path: '/opReg2/', url: 'opReg2.html',  options: {transition: 'f7-cover'}},
+    { path: '/opReg3/', url: 'opReg3.html',  options: {transition: 'f7-cover'}},
+    { path: '/opReg4/', url: 'opReg4.html',  options: {transition: 'f7-cover'}},
+    { path: '/loggedIn/', url: 'loggedIn.html',  options: {transition: 'f7-cover'}},
+    { path: '/loggedOut/', url: 'loggedOut.html',  options: {transition: 'f7-cover'}},
+    { path: '/reserva/', url: 'reserva.html',  options: {transition: 'f7-cover'}},
+    { path: '/turnos/', url: 'turnos.html',  options: {transition: 'f7-cover'}},
+    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html',  options: {transition: 'f7-cover'}},
+    { path: '/seccionComplejos/', url: 'seccionComplejos.html',  options: {transition: 'f7-cover'}},
+    { path: '/turnosC/', url: 'turnosC.html',  options: {transition: 'f7-cover'}},
   ]
   // ... other parameters
 });
@@ -35,15 +35,11 @@ var mainView = app.views.create('.view-main');
 // Handle Cordova Device Ready Event
 $$(document).on('deviceready', function () {
   console.log("Device is ready!");
-
 });
-
 // Option 1. Using one 'page:init' handler for all pages
 $$(document).on('page:init', function (e) {
   // Do something here when page loaded and initialized
-  //navBarOpen()
 })
-
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexNuevaCuenta").on('click', aP1Registro)
@@ -55,11 +51,9 @@ $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
 })
 $$(document).on('page:init', '.page[data-name="opReg2"]', function (e) {
   $$("#op2RegBtnSig").on('click', aP3Registro)
-
 })
 $$(document).on('page:init', '.page[data-name="opReg3"]', function (e) {
   $$("#op3RegBtnSig").on('click', aP4Registro)
-
 })
 $$(document).on('page:init', '.page[data-name="opReg4"]', function (e) {
   getPositionGPS()
@@ -106,28 +100,31 @@ var colTurnos = db.collection("TURNOS")
 //Variables globales Reservas
 var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, horaTurno
 
-/* ----------------------- -------------------------- ----------------------- */
 
 //Funciones
 //Pasar de pantalla donde comienza el paso 1 para registro de usuario
 function aP1Registro() {
   mainView.router.navigate("/opReg1/")
 }
+
 //Pasar de pantalla 2 en el registro de usuario
 function aP2Registro() {
   mainView.router.navigate("/opReg2/")
   emailReg = $$("#op1RegInputMail").val()
   nombre = $$("#op1RegInputNombre").val()
 }
+
 //Pasar de pantalla 3 en el registro de usuario
 function aP3Registro() {
   mainView.router.navigate("/opReg3/")
   passwordReg = $$("#op2RegInputPass").val()
 }
+
 //Pasar de pantalla 4 en el registro de usuario
 function aP4Registro() {
   mainView.router.navigate("/opReg4/")
 }
+
 //Pasar a pantalla de reserva
 function aPantReserva() {
   setTimeout(() => {
@@ -259,7 +256,6 @@ function registerVisit() {
     .then(function (query) {
       query.forEach(function (doc) {
         quantVisits = doc.data().cantVisitas
-        console.log(quantVisits);
 
         //Aumento cantidad de visistas y actualizo
         colUsers.doc(sessionId).update({ cantVisitas: quantVisits + 1 })
@@ -306,8 +302,6 @@ function buscarCancha() {
   resDeporte = $$("#reservaDeporte").val()
   resTipoCancha = $$("#reservaTipoCancha").val()
   resFecha = $$("#reservaFecha").val()
-  console.log(resFecha);
-
 
   if (resComplejo !== "---" && resDeporte !== "---" && resTipoCancha !== "---" && resFecha !== "") {
     mainView.router.navigate('/turnos/');
@@ -321,7 +315,6 @@ function buscarCancha() {
           turnos.push(doc.id)
           query = doc.data()
         })
-
         if (turnos.length == 0) {
           cajaFechaTurnos = $$("#cajaFechaTurnos")
           cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
@@ -331,7 +324,7 @@ function buscarCancha() {
           for (i = 0; i < turnos.length; i++) {
             divTurnos = $$("#turnosDisponibles")
             var turno = turnos[i];
-            boton = $$(`<input type="button" id="turno" value="${turno}HS" class="button button-fill color-green"></input><br>`)
+            boton = $$(`<input type="button" id="turno" value="${turno}HS" class="button button-small button-outline color-green"></input><br>`)
             divTurnos.append(boton)
             boton.data("valor", `${turno}`)
             boton.on("click", function () {
@@ -343,8 +336,6 @@ function buscarCancha() {
             })
           }
         }
-
-        console.log("promesa cumplida")
       })
       .catch(function (error) {
         console.log("Error: " + error)
@@ -360,7 +351,7 @@ function buscarCancha() {
 function nuevaBusqueda() {
   setTimeout(() => {
     mainView.router.navigate("/reserva/")
-  }, 4000)
+  }, 6000)
 }
 
 //Función para tomar un turno
@@ -372,18 +363,15 @@ function tomarTurno() {
       //Se retornan los turnos disponibles
       query.forEach(function (documento) {
         var queryTurnos = documento.data()
-        console.log(queryTurnos);
         id = documento.id
-        console.log(id);
-        console.log(queryTurnos);
 
       })
       colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").doc(horaTurno).update({ estado: "ocupado" })
       console.log("Turnos disponibles actualizados")
       //Se guardan los datos de la reserva con el turno tomado
       guardarReserva()
-      //Se pasa a la pantalla de confirmación del turno
-      mainView.router.navigate('/confirmacionTurno/')
+      //Loader reserva turno
+      loaderReservaTurno()
     })
     .catch(function (error) {
       console.log("Error: " + error)
@@ -440,7 +428,7 @@ function buscarturnosComp() {
           for (i = 0; i < turnos.length; i++) {
             divTurnos = $$("#gestionTurnosDisponibles")
             var turno = turnos[i];
-            boton = $$(`<input type="button" id="turnoGestion" value="${turno}HS" class="button button-fill color-green"></input><br>`)
+            boton = $$(`<input type="button" id="turnoGestion" value="${turno}HS" class="button button-small button-outline color-green"></input><br>`)
             divTurnos.append(boton)
             boton.data("valor", `${turno}`)
             boton.on("click", function () {
@@ -457,7 +445,7 @@ function buscarturnosComp() {
             })
           }
 
-          $$("#gestionTurnosDisponibles").append("<h2>Seleccione el turno que desea eliminar</h2>")
+          $$("#gestionTurnosEliminar").append("<h2>Seleccione el turno que desea eliminar</h2>")
         }
 
         console.log("promesa cumplida")
@@ -475,5 +463,16 @@ function cierreSesión() {
   setTimeout(() => {
     mainView.router.navigate("/index/")
   }, 3000)
-  
+}
+//Función idioma (Proximamente)
+$$("#indexIdioma").on("click", function() { app.dialog.alert("Sección a implementar proximamente")})
+//Función carga de turnos
+
+function loaderReservaTurno (){
+  app.dialog.preloader('Reservando turno...');
+  setTimeout(function () {
+    app.dialog.close();
+    //Se pasa a la pantalla de confirmación del turno
+    mainView.router.navigate('/confirmacionTurno/')
+  }, 3000);
 }

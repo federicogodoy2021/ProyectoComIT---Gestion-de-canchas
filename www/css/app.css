@@ -1,5 +1,8 @@
 /* Your app custom styles here */
 /* poppins-regular - latin */
+*{
+  font-family: 'Exo 2', sans-serif !important;
+}
 @font-face {
   font-family: 'Poppins';
   font-style: normal;
@@ -831,8 +834,55 @@ ul{
   margin: 15px;  
 }
 .colorFont{
-  color: rgba(245, 245, 220, 0.719);
+  color: beige ;
 }
 a{
-  font-size: 10px;
+  font-size: 14px;
+}
+#gestionTurnosDisponibles{
+  background-color: rgb(231, 125, 3);
+}
+#turnosDisponibles{
+  background-color: rgb(231, 125, 3);
+}
+#turnoGestion{
+  background-color: rgba(245, 245, 220, 0.719);;
+}
+#turno{
+  background-color: rgba(245, 245, 220, 0.719);;
+}
+#indexNuevaCuenta{
+height: 50%;
+}
+#indexOlviPass{
+height: 50%;
+}
+.cuentaExist{
+  height: 50%;
+}
+#tituloConfirmReserva{
+  font-size: 30px;
+  color: #fff;
+  text-shadow:
+    3px 3px 0 #000,
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+}
+#confirmacionTurno{
+  font-size: 22px;
+}
+#confirmacionMailTurno{
+  font-size: 18px;
+}
+#textBienvenidaDespedida{
+  text-align: center;
+}
+
+#gestionCajaFechaTurnos{
+  text-align: center;
+}
+#cajaFechaTurnos{
+  text-align: center;
 }
