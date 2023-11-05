@@ -815,8 +815,10 @@ code {
   margin: 5px;
 }
 #paginas{
-  background-color: rgb(231, 125, 3);
-  opacity: 1 !important
+/*   background-color: rgb(231, 125, 3);
+  opacity: 1 !important */
+  background: rgb(255,154,21);
+  background: linear-gradient(225deg, rgba(255,154,21,1) 21%, rgba(217,109,0,1) 100%);
 }
 #turnosDisponibles{
   margin: 0px;
@@ -825,7 +827,7 @@ ul{
   list-style: none;
 }
 #barraNav{
-  background-color: rgb(231, 125, 3);
+  background-color: rgba(231, 125, 3, 0);
 }
 .labelsForm{
   margin: 0;
@@ -843,7 +845,8 @@ a{
   background-color: rgb(231, 125, 3);
 }
 #turnosDisponibles{
-  background-color: rgb(231, 125, 3);
+  background: rgb(255,154,21);
+  background: linear-gradient(225deg, rgba(255,154,21,1) 21%, rgba(217,109,0,1) 100%);
 }
 #turnoGestion{
   background-color: rgba(245, 245, 220, 0.719);;

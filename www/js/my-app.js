@@ -14,18 +14,19 @@ var app = new Framework7({
   },
   // Add default routes
   routes: [
-    { path: '/index/', url: 'index.html',  options: {transition: 'f7-cover'}},
-    { path: '/opReg1/', url: 'opReg1.html',  options: {transition: 'f7-cover'}},
-    { path: '/opReg2/', url: 'opReg2.html',  options: {transition: 'f7-cover'}},
-    { path: '/opReg3/', url: 'opReg3.html',  options: {transition: 'f7-cover'}},
-    { path: '/opReg4/', url: 'opReg4.html',  options: {transition: 'f7-cover'}},
-    { path: '/loggedIn/', url: 'loggedIn.html',  options: {transition: 'f7-cover'}},
-    { path: '/loggedOut/', url: 'loggedOut.html',  options: {transition: 'f7-cover'}},
-    { path: '/reserva/', url: 'reserva.html',  options: {transition: 'f7-cover'}},
-    { path: '/turnos/', url: 'turnos.html',  options: {transition: 'f7-cover'}},
-    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html',  options: {transition: 'f7-cover'}},
-    { path: '/seccionComplejos/', url: 'seccionComplejos.html',  options: {transition: 'f7-cover'}},
-    { path: '/turnosC/', url: 'turnosC.html',  options: {transition: 'f7-cover'}},
+    { path: '/index/', url: 'index.html', options: { transition: 'f7-cover' } },
+    { path: '/opReg1/', url: 'opReg1.html', options: { transition: 'f7-cover' } },
+    { path: '/opReg2/', url: 'opReg2.html', options: { transition: 'f7-cover' } },
+    { path: '/opReg3/', url: 'opReg3.html', options: { transition: 'f7-cover' } },
+    { path: '/opReg4/', url: 'opReg4.html', options: { transition: 'f7-cover' } },
+    { path: '/loggedIn/', url: 'loggedIn.html', options: { transition: 'f7-cover' } },
+    { path: '/loggedOut/', url: 'loggedOut.html', options: { transition: 'f7-cover' } },
+    { path: '/reserva/', url: 'reserva.html', options: { transition: 'f7-cover' } },
+    { path: '/turnos/', url: 'turnos.html', options: { transition: 'f7-cover' } },
+    { path: '/confirmacionTurno/', url: 'confirmacionTurno.html', options: { transition: 'f7-cover' } },
+    { path: '/seccionComplejos/', url: 'seccionComplejos.html', options: { transition: 'f7-cover' } },
+    { path: '/turnosC/', url: 'turnosC.html', options: { transition: 'f7-cover' } },
+    { path: '/modoDev/', url: 'modoDev.html', options: { transition: 'f7-cover' } }
   ]
   // ... other parameters
 });
@@ -63,7 +64,6 @@ $$(document).on('page:init', '.page[data-name="opReg4"]', function (e) {
 $$(document).on('page:init', '.page[data-name="loggedIn"]', function (e) {
   $$("#userLoggedIn").text(`${emailReg}. Gracias por registrarte`)
   $$("#userLoggedIn").text(emailSession)
-  aPantReserva()
 })
 $$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
   $$("#btnBuscar").on('click', buscarCancha)
@@ -79,9 +79,13 @@ $$(document).on('page:init', '.page[data-name="seccionComplejos"]', function (e)
   $$("#gestionbtnBuscar").on('click', buscarturnosComp)
 })
 $$(document).on('page:init', '.page[data-name="turnosC"]', function (e) {
+  $$("#gestionAgregarTurno").on("click", agregarTurnos)
 })
 $$(document).on('page:init', '.page[data-name="loggedOut"]', function (e) {
   cierreSesión()
+})
+$$(document).on('page:init', '.page[data-name="modoDev"]', function (e) {
+  modoDesarrollador()
 })
 
 /* ----------------------- -------------------------- ----------------------- */
@@ -98,7 +102,7 @@ var colReservas = db.collection("RESERVAS")
 var colTurnos = db.collection("TURNOS")
 
 //Variables globales Reservas
-var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, horaTurno
+var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, resFechaGestion, actualizarTurnos, horaTurno
 
 
 //Funciones
@@ -127,10 +131,11 @@ function aP4Registro() {
 
 //Pasar a pantalla de reserva
 function aPantReserva() {
-  setTimeout(() => {
-    mainView.router.navigate("/reserva/")
+  if (roleSession == "")
+    setTimeout(() => {
+      mainView.router.navigate("/reserva/")
 
-  }, 3000)
+    }, 3000)
 }
 
 //Registro de nueva cuenta de usuario
@@ -191,9 +196,21 @@ function inicioSesion() {
               //Ingreso dependiendo del role de usuario
               if (roleSession == "normal user") {
                 mainView.router.navigate('/loggedIn/');
+                setTimeout(() => {
+                  mainView.router.navigate("/reserva/")
+                }, 3000)
                 registerVisit()
-              } else if (roleSession == "complejo")
-              mainView.router.navigate('/seccionComplejos/');
+              } else if (roleSession == "complejo") {
+                mainView.router.navigate('/loggedIn/');
+                setTimeout(() => {
+                  mainView.router.navigate("/seccionComplejos/")
+                }, 3000)
+              } else if (roleSession == "dev") {
+                mainView.router.navigate('/loggedIn/');
+                setTimeout(() => {
+                  mainView.router.navigate('/modoDev/')
+                }, 3000)
+              }
             })
           })
           .catch(function (error) {
@@ -259,8 +276,6 @@ function registerVisit() {
 
         //Aumento cantidad de visistas y actualizo
         colUsers.doc(sessionId).update({ cantVisitas: quantVisits + 1 })
-
-        console.log("Documento actualizado")
       })
     })
     .catch(function (error) {
@@ -312,19 +327,26 @@ function buscarCancha() {
         var turnos = []
         result.forEach(function (doc) {
           id = doc.id;
-          turnos.push(doc.id)
-          query = doc.data()
+            id = parseInt(id);
+            turnos.push(id)
+            turnos.sort(function(a, b){return a - b})
+            query = doc.data()
         })
         if (turnos.length == 0) {
           cajaFechaTurnos = $$("#cajaFechaTurnos")
           cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
+    
         } else {
           $$("#fechaTurno").text(`Turnos disponibles ${resFecha}`)
           //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
           for (i = 0; i < turnos.length; i++) {
             divTurnos = $$("#turnosDisponibles")
             var turno = turnos[i];
-            boton = $$(`<input type="button" id="turno" value="${turno}HS" class="button button-small button-outline color-green"></input><br>`)
+            boton = $$(`
+                        <li>
+                          <input type="button" id="turno" value="${turno}HS" class="button button-small button-outline color-green"></input><br>
+                        </li>
+                        `)
             divTurnos.append(boton)
             boton.data("valor", `${turno}`)
             boton.on("click", function () {
@@ -360,13 +382,11 @@ function tomarTurno() {
   colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
     .then(function (query) {
 
-      //Se retornan los turnos disponibles
-      query.forEach(function (documento) {
-        var queryTurnos = documento.data()
-        id = documento.id
+      turnoSeleccionado = colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").doc(horaTurno)
+      //Actualización de campos del turno
+      turnoSeleccionado.update({ estado: "ocupado" })
+      turnoSeleccionado.update({ reservadoPor: `${emailSession}` })
 
-      })
-      colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").doc(horaTurno).update({ estado: "ocupado" })
       console.log("Turnos disponibles actualizados")
       //Se guardan los datos de la reserva con el turno tomado
       guardarReserva()
@@ -411,44 +431,46 @@ function buscarturnosComp() {
     //Se filtran los turnos disponibles en base a la fecha seleccionada
     colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
       .then(function (result) {
-        //Se retornan los turnos disponibles
-        var turnos = []
-        result.forEach(function (doc) {
-          id = doc.id;
-          turnos.push(doc.id)
-          query = doc.data()
-        })
+        actualizarTurnos = function desplegarTurnos() {
+          //Se retornan los turnos disponibles
+          var turnos = []
+          result.forEach(function (doc) {
+            id = doc.id;
+            id = parseInt(id);
+            turnos.push(id)
+            turnos.sort(function(a, b){return a - b})
+            query = doc.data()
+          })
 
-        if (turnos.length == 0) {
-          cajaFechaTurnos = $$("#gestionCajaFechaTurnos")
-          cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
-        } else {
-          $$("#gestionFechaTurno").text(`Turnos disponibles ${resFechaGestion}`)
-          //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
-          for (i = 0; i < turnos.length; i++) {
-            divTurnos = $$("#gestionTurnosDisponibles")
-            var turno = turnos[i];
-            boton = $$(`<input type="button" id="turnoGestion" value="${turno}HS" class="button button-small button-outline color-green"></input><br>`)
-            divTurnos.append(boton)
-            boton.data("valor", `${turno}`)
-            boton.on("click", function () {
-              var valor = $$(this).data("valor");
-              //Se guarda el valor del turno en una variable global
-              horaTurno = valor
-              $$("#gestionTurnosEliminar").html(`
-              <h2>Se va a eliminar el turno de las ${horaTurno}hs.</h2>
-              <a id="gestionBtnEliminar" class="button button-fill color-blue">Eliminar turno seleccionado</a>
-              `)
-
-              //Se toma el turno elegido
-              //tomarTurno()
-            })
+          if (turnos.length == 0) {
+            cajaFechaTurnos = $$("#gestionCajaFechaTurnos")
+            cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
+            $$("#gestionTurnosEliminar").html("<div></div>")
+          } else {
+            $$("#gestionFechaTurno").text(`Turnos disponibles ${resFechaGestion}`)
+            $$("#gestionTurnosEliminar").append("<h2>Seleccione el turno que desea eliminar</h2>")
+            //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
+            for (i = 0; i < turnos.length; i++) {
+              divTurnos = $$("#gestionTurnosDisponibles")
+              var turno = turnos[i];
+              boton = $$(`
+                          <li>
+                            <input type="button" id="turnoGestion" value="${turno}HS" class="button button-small button-outline color-green"></input><br>                            
+                          </li>
+                          `)
+              divTurnos.append(boton)
+              boton.data("valor", `${turno}`)
+              boton.on("click", function () {
+                var valor = $$(this).data("valor");
+                //Se guarda el valor del turno en una variable global
+                horaTurno = valor
+                confirmacionEliminarTurno()
+              })
+            }
           }
-
-          $$("#gestionTurnosEliminar").append("<h2>Seleccione el turno que desea eliminar</h2>")
         }
-
-        console.log("promesa cumplida")
+        actualizarTurnos()
+        console.log("Promesa cumplida!")
       })
       .catch(function (error) {
         console.log("Error: " + error)
@@ -465,14 +487,121 @@ function cierreSesión() {
   }, 3000)
 }
 //Función idioma (Proximamente)
-$$("#indexIdioma").on("click", function() { app.dialog.alert("Sección a implementar proximamente")})
+$$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
 //Función carga de turnos
-
-function loaderReservaTurno (){
+function loaderReservaTurno() {
   app.dialog.preloader('Reservando turno...');
   setTimeout(function () {
     app.dialog.close();
     //Se pasa a la pantalla de confirmación del turno
     mainView.router.navigate('/confirmacionTurno/')
   }, 3000);
+}
+//Función carga de turnos
+function loaderAddTurno() {
+  app.dialog.preloader('Agregando turno...');
+  setTimeout(function () {
+    app.dialog.close();
+    //Se pasa a la pantalla de confirmación del turno
+    mainView.router.navigate('/seccionComplejos/')
+  }, 3000);
+}
+//Función para eliminar turno en sección complejos
+function confirmacionEliminarTurno() {
+  texto = `¿Está seguro que desea eliminar el turno de las ${horaTurno} hs?`
+  titulo = "Eliminación de turno"
+
+  function confirmDeleteTurno() {
+    //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
+    colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
+      .then(function (query) {
+        //Se cambia a estado "ocupado" el turno seleccionado
+        turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(horaTurno)
+
+        turnoSeleccionado.update({ estado: "turno anulado" })
+
+      })
+      .catch(function (error) {
+        console.log("Error: " + error)
+      })
+
+    function cerrarAlert() {
+      mainView.router.navigate('/seccionComplejos/')
+    }
+    app.dialog.alert('El turno se eliminó correctamente!', titulo, cerrarAlert);
+  }
+  app.dialog.confirm(texto, titulo, confirmDeleteTurno)
+}
+//Función selección en modo Desarrollador
+function modoDesarrollador() {
+  $$("#seccionComplejos").on("click", function () {
+    mainView.router.navigate('/seccionComplejos/')
+  })
+  $$("#seccionUsuarios").on("click", function () {
+    mainView.router.navigate('/reserva/')
+  })
+}
+//Función para agregar turnos en sección Complejos
+function agregarTurnos() {
+  texto1 = "Ingrese el horario que desea agregar"
+  texto2 = "Nuevo Turno"
+  
+  app.dialog.prompt(texto1, texto2, addHourToDb)
+  
+
+  function addHourToDb(valor){
+
+    console.log(userSession, resFechaGestion, valor);
+    //Se filtran los turnos disponibles en base todos los estados no disponibles
+    colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "ocupado").where("estado", "==","turno anulado").get()
+      .then(function (query) {
+        //Se cambia a estado "libre" el turno seleccionado
+        turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor).get()
+          .then(function(data) {
+            estadoTurno = data._delegate._document.data.value.mapValue.fields.estado.stringValue
+            if(estadoTurno == "libre"){
+              $$("#gestionTurnosEliminar").html(
+                `
+                  <h2>Seleccione el turno que desea eliminar</h2>
+                  <p>El turno de las ${valor} hs ya se encuentra disponible. Por favor ingrese un horario NO DISPONIBLE</p>
+                `
+              )
+            }else{
+            creandoTurno()
+            loaderAddTurno()}
+          })
+          .catch(function (error) {
+            console.log("Error: " + error)
+          })
+      })
+      .catch(function (error) {
+        console.log("Error: " + error)
+      })
+
+      function creandoTurno() {
+
+        colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
+            .then(function (query) {
+              //Se cambia a estado "ocupado" el turno seleccionado
+              turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor)
+      
+              turnoSeleccionado.update({ estado: "libre" })
+              turnoSeleccionado.update({ reservadoPor: "" })
+      
+            })
+            .catch(function (error) {
+              console.log("Error: " + error)
+            })
+        
+      }
+
+
+  }
+
+  
+  
+  
+
+
+
 }
