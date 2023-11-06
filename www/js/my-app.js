@@ -5,7 +5,7 @@ var app = new Framework7({
   // App root element
   root: '#app',
   // App Name
-  name: 'Canchas Rosario',
+  name: 'CanchaAPP Rosario',
   // App id
   id: 'com.myapp.test',
   // Enable swipe panel
@@ -45,6 +45,10 @@ $$(document).on('page:init', function (e) {
 $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexNuevaCuenta").on('click', aP1Registro)
   $$("#indexBtnIni").on('click', inicioSesion)
+  //Función idioma (Proximamente)
+$$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
+//Función idioma (Proximamente)
+$$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -62,7 +66,6 @@ $$(document).on('page:init', '.page[data-name="opReg4"]', function (e) {
 
 })
 $$(document).on('page:init', '.page[data-name="loggedIn"]', function (e) {
-  $$("#userLoggedIn").text(`${emailReg}. Gracias por registrarte`)
   $$("#userLoggedIn").text(emailSession)
 })
 $$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
@@ -156,6 +159,12 @@ function nuevoRegistroUser() {
         frecuenciaJuego = $$("#op3RegInputFrecuencia").val()
 
         addUserToDB()
+        emailSession = emailReg
+        mainView.router.navigate('/loggedIn/');
+
+        setTimeout(()=>{
+          mainView.router.navigate('/reserva/');
+        },3000)
 
         console.log(`Se acaba de registrar el usuario ${username} nacido el ${fechaNac} en la localidad de ${localidad}. Su deporte favorito es ${deporte} y lo practiva ${frecuenciaJuego} veces por semana`);
       })
@@ -193,6 +202,7 @@ function inicioSesion() {
               roleSession = doc.data().role
               userSession = doc.data().usuario
 
+              $$("#userLoggedIn").text(emailSession)
               //Ingreso dependiendo del role de usuario
               if (roleSession == "normal user") {
                 mainView.router.navigate('/loggedIn/');
@@ -257,7 +267,6 @@ function addUserToDB() {
   colUsers.doc(myId).set(datos)
     .then(function (docRef) {
       console.log("Doc ref con el id = " + myId)
-      mainView.router.navigate('/loggedIn/');
     })
     .catch(function (error) {
       console.log("Error: " + error)
@@ -486,8 +495,6 @@ function cierreSesión() {
     mainView.router.navigate("/index/")
   }, 3000)
 }
-//Función idioma (Proximamente)
-$$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
 //Función carga de turnos
 function loaderReservaTurno() {
   app.dialog.preloader('Reservando turno...');
@@ -495,7 +502,7 @@ function loaderReservaTurno() {
     app.dialog.close();
     //Se pasa a la pantalla de confirmación del turno
     mainView.router.navigate('/confirmacionTurno/')
-  }, 3000);
+  }, 8000);
 }
 //Función carga de turnos
 function loaderAddTurno() {
