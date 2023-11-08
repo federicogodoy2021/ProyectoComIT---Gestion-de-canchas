@@ -1,0 +1,45 @@
+<!-- We don't need a full layout in this file because this page will be parsed with Ajax.  -->
+<div id="paginas" class="page" data-name="dataUsers">
+
+    <div class="page-content">
+        <!-- ------------------------ Barra de navegación ------------------------ -->
+        <div class="navbar">
+            <div id="barraNav" class="navbar-bg"></div>
+            <div class="navbar-inner">
+                <div class="title colorFont"><h2>Data Users</h2></div>
+                <div class="right">
+                  <div class="list accordion-list accordion-opposite">
+                    <ul>
+                      <li class="accordion-item">
+                        <a href="" class="item-link item-content">
+                          <div class="item-inner">
+                            <div class="item-title"><p class="colorFont labelsForm">Menu</p></div>
+                        </div>
+                        </a>
+                        <div class="accordion-item-content"><a id="btnCerrarSesion" href="/loggedOut/"><p class="colorFont labelsForm">Cerrar Sesión</p></a></div>                      </li>
+                    </ul>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="block">    
+            <!-- -------------------------- Lista de Usuarios registrados -------------------------- -->
+            <div class="grid grid-cols-1 grid-gap">
+                <h2 id="dataUsersTitle" >Usuarios Registrados</h2>
+            </div>
+            <div class="list list-strong list-outline list-dividers-ios simple-list">
+                <ul id="subDataUsers">
+                </ul>
+              </div>
+            <div class="list list-strong list-outline list-dividers-ios simple-list">
+                <ul id="dataUsers">
+                </ul>
+              </div>
+            <div class="grid grid-cols-1 grid-gap">
+                <div id="cajaBotonUsersModoDev">
+                  <a id="btnDataUsers" class="button button-fill color-blue">Mostrar Usuarios</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

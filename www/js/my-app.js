@@ -26,7 +26,9 @@ var app = new Framework7({
     { path: '/confirmacionTurno/', url: 'confirmacionTurno.html', options: { transition: 'f7-cover' } },
     { path: '/seccionComplejos/', url: 'seccionComplejos.html', options: { transition: 'f7-cover' } },
     { path: '/turnosC/', url: 'turnosC.html', options: { transition: 'f7-cover' } },
-    { path: '/modoDev/', url: 'modoDev.html', options: { transition: 'f7-cover' } }
+    { path: '/modoDev/', url: 'modoDev.html', options: { transition: 'f7-cover' } },
+    { path: '/dataUsers/', url: 'dataUsers.html', options: { transition: 'f7-cover' } },
+    { path: '/dataComplejos/', url: 'dataComplejos.html', options: { transition: 'f7-cover' } }
   ]
   // ... other parameters
 });
@@ -49,6 +51,7 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
 $$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
 //Función idioma (Proximamente)
 $$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
+$$("#btnPrueba").on("click", bankOfUsers)
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -70,6 +73,7 @@ $$(document).on('page:init', '.page[data-name="loggedIn"]', function (e) {
 })
 $$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
   $$("#btnBuscar").on('click', buscarCancha)
+  volverModoDev()
 })
 $$(document).on('page:init', '.page[data-name="turnos"]', function (e) {
 })
@@ -80,6 +84,7 @@ $$(document).on('page:init', '.page[data-name="confirmacionTurno"]', function (e
 })
 $$(document).on('page:init', '.page[data-name="seccionComplejos"]', function (e) {
   $$("#gestionbtnBuscar").on('click', buscarturnosComp)
+  volverModoDev()
 })
 $$(document).on('page:init', '.page[data-name="turnosC"]', function (e) {
   $$("#gestionAgregarTurno").on("click", agregarTurnos)
@@ -88,7 +93,12 @@ $$(document).on('page:init', '.page[data-name="loggedOut"]', function (e) {
   cierreSesión()
 })
 $$(document).on('page:init', '.page[data-name="modoDev"]', function (e) {
-  modoDesarrollador()
+})
+$$(document).on('page:init', '.page[data-name="dataUsers"]', function (e) {
+  $$("#btnDataUsers").on("click", bankOfUsers)
+})
+$$(document).on('page:init', '.page[data-name="dataComplejos"]', function (e) {
+  $$("#btnDataComplejos").on("click", bankOfComplejos)
 })
 
 /* ----------------------- -------------------------- ----------------------- */
@@ -374,8 +384,6 @@ function buscarCancha() {
   } else {
     $$("#cajaValidacionForm").html("<h3>Por favor complete todos los campos del formulario</h3>")
   }
-
-
 }
 
 //Función para volver a pantalla de reservas
@@ -480,7 +488,9 @@ function buscarturnosComp() {
         }
         actualizarTurnos()
         console.log("Promesa cumplida!")
-      })
+      }
+      
+      )
       .catch(function (error) {
         console.log("Error: " + error)
       })
@@ -539,15 +549,6 @@ function confirmacionEliminarTurno() {
   }
   app.dialog.confirm(texto, titulo, confirmDeleteTurno)
 }
-//Función selección en modo Desarrollador
-function modoDesarrollador() {
-  $$("#seccionComplejos").on("click", function () {
-    mainView.router.navigate('/seccionComplejos/')
-  })
-  $$("#seccionUsuarios").on("click", function () {
-    mainView.router.navigate('/reserva/')
-  })
-}
 //Función para agregar turnos en sección Complejos
 function agregarTurnos() {
   texto1 = "Ingrese el horario que desea agregar"
@@ -601,14 +602,104 @@ function agregarTurnos() {
             })
         
       }
-
-
   }
+}
+//Función para colocar alerta en modo Dev
+function alertaFuturaSeccion (){
+  app.dialog.alert('Sección a implementar proximamente')
+}
+//Función para traer la lista de usuarios y sus datos
+function bankOfUsers (){
 
-  
-  
-  
 
+  colUsers.where("role","==","normal user").get()
+  .then(function(doc){
+    usuarios = []
+    console.log(usuarios);
+    doc.forEach(function(users){
+      info = users.data()
+      usuarios.push(info)
+    })
 
+            //Se despliegan los usuarios registrados en formato de botones para ser seleccionados
+            for (i = 0; i < usuarios.length; i++) {
+              divUsers = $$("#subDataUsers")
+              var usuario = usuarios[i];
+              boton = $$(`
+                          <li>
+                            <input type="button" id="boton${i}" value="${usuario.email}" class="button button-small button-outline color-green botonUsers"></input><br>                            
+                          </li>
+                          `)
+              divUsers.append(boton)
+              boton.data("valor", `${i}`)
+              boton.on("click", function () {
+                var valor = $$(this).data("valor");
+                $$("#dataUsers").html(`
+                          <h3 class="subTituloSeccion">Datos del usuario</h3>
+                          <p class="dato">Ciudad: ${usuarios[valor].ciudad}</p>
+                          <p class="dato">Fecha de nacimiento: ${usuarios[valor].fechaN}</p>
+                          <p class="dato">Usuario: ${usuarios[valor].usuario}</p>
+                          <p class="dato">Contraseña: ${usuarios[valor].contraseña}</p>
+                          <p class="dato">Cantidad de visitas: ${usuarios[valor].cantVisitas}</p>
+                          <p class="dato">Rol: ${usuarios[valor].role}</p>
+        `)
+      })}
 
+      $$("#cajaBotonUsersModoDev").html(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
+    
+  })
+  .catch(function(error){
+    console.log(error.message);
+  })
+
+}
+//Función para traer la lista de usuarios y sus datos
+function bankOfComplejos (){
+
+  colUsers.where("role","==","complejo").get()
+  .then(function(doc){
+    complejos = []
+    doc.forEach(function(comp){
+      infoComplejo = comp.data()
+      complejos.push(infoComplejo)
+    })
+
+            //Se despliegan los usuarios registrados en formato de botones para ser seleccionados
+            for (i = 0; i < complejos.length; i++) {
+              divComplejos = $$("#subDataComplejos")
+              var complejo = complejos[i];
+              boton = $$(`
+                          <li>
+                            <input type="button" id="boton${i}" value="${complejo.email}" class="button button-small button-outline color-green botonUsers"></input><br>                            
+                          </li>
+                          `)
+              divComplejos.append(boton)
+              boton.data("valor", `${i}`)
+              boton.on("click", function () {
+                var valor = $$(this).data("valor");
+                $$("#dataComplejos").html(`
+                          <h3 class="subTituloSeccion">Datos del complejo</h3>
+                          <p class="dato">Ciudad: ${complejos[valor].ciudad}</p>
+                          <p class="dato">Fecha de nacimiento: ${complejos[valor].fechaN}</p>
+                          <p class="dato">Usuario: ${complejos[valor].usuario}</p>
+                          <p class="dato">Contraseña: ${complejos[valor].contraseña}</p>
+                          <p class="dato">Cantidad de visitas: ${complejos[valor].cantVisitas}</p>
+                          <p class="dato">Rol: ${complejos[valor].role}</p>
+        `)
+      })}
+
+      $$("#cajaBotonComplejossModoDev").html(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
+    
+  })
+  .catch(function(error){
+    console.log(error.message);
+  })
+}
+//Función volver a modoDev
+function volverModoDev(){
+  if(roleSession == "dev"){
+    $$("#cajaBtnBuscarComplejos").append(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
+    $$("#cajaBtnBuscarReserva").append(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
+    
+  }
 }

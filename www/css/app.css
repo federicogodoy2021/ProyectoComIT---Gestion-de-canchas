@@ -964,6 +964,13 @@ ul {
   list-style: none;
 }
 
+ul::after{
+  content: none;
+}
+ul::before{
+  content: none;
+}
+
 #barraNav {
   background-color: rgba(231, 125, 3, 0);
 }
@@ -985,6 +992,11 @@ a {
 }
 
 #gestionTurnosDisponibles {
+  background: rgb(249, 65, 65);
+  background: linear-gradient(23deg, rgba(249, 65, 65, 1) 0%, rgba(118, 92, 90, 1) 36%, rgba(83, 164, 146, 1) 66%, rgba(74, 79, 228, 1) 100%);
+}
+
+#turnosDisponibles {
   background: rgb(249, 65, 65);
   background: linear-gradient(23deg, rgba(249, 65, 65, 1) 0%, rgba(118, 92, 90, 1) 36%, rgba(83, 164, 146, 1) 66%, rgba(74, 79, 228, 1) 100%);
 }
@@ -1063,4 +1075,36 @@ a {
 
 .item-after {
   color: #000;
+}
+
+#dataUsers {
+  background-color: rgba(83, 164, 146, 1);  
+}
+
+#subDataUsers {
+  background-color: darkcyan;
+}
+
+.botonUsers {
+  background-color: beige;
+}
+#dataComplejos {
+  background-color: darkcyan;  
+}
+
+#subDataComplejos {
+  background-color: darkcyan;
+}
+
+.botonComplejos {
+  background-color: beige;
+}
+
+.dato {
+  color: black;
+  font-weight: bold;
+}
+
+.subTituloSeccion{
+  color: beige;
 }
