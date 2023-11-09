@@ -964,10 +964,11 @@ ul {
   list-style: none;
 }
 
-ul::after{
+ul::after {
   content: none;
 }
-ul::before{
+
+ul::before {
   content: none;
 }
 
@@ -992,19 +993,13 @@ a {
 }
 
 #gestionTurnosDisponibles {
-  background: rgb(249, 65, 65);
-  background: linear-gradient(23deg, rgba(249, 65, 65, 1) 0%, rgba(118, 92, 90, 1) 36%, rgba(83, 164, 146, 1) 66%, rgba(74, 79, 228, 1) 100%);
+  background-color: transparent;
 }
 
 #turnosDisponibles {
-  background: rgb(249, 65, 65);
-  background: linear-gradient(23deg, rgba(249, 65, 65, 1) 0%, rgba(118, 92, 90, 1) 36%, rgba(83, 164, 146, 1) 66%, rgba(74, 79, 228, 1) 100%);
+  background-color: transparent;
 }
 
-#turnosDisponibles {
-  background: rgb(249, 65, 65);
-  background: linear-gradient(23deg, rgba(249, 65, 65, 1) 0%, rgba(118, 92, 90, 1) 36%, rgba(83, 164, 146, 1) 66%, rgba(74, 79, 228, 1) 100%);
-}
 
 #turnoGestion {
   background-color: rgba(245, 245, 220, 0.719);
@@ -1078,22 +1073,23 @@ a {
 }
 
 #dataUsers {
-  background-color: rgba(83, 164, 146, 1);  
+  background-color: transparent;
 }
 
 #subDataUsers {
-  background-color: darkcyan;
+  background-color: transparent;
 }
 
 .botonUsers {
   background-color: beige;
 }
+
 #dataComplejos {
-  background-color: darkcyan;  
+  background-color: transparent;
 }
 
 #subDataComplejos {
-  background-color: darkcyan;
+  background-color: transparent;
 }
 
 .botonComplejos {
@@ -1101,10 +1097,52 @@ a {
 }
 
 .dato {
-  color: black;
+  color: beige;
   font-weight: bold;
 }
 
-.subTituloSeccion{
+#dataUsersTitle{
   color: beige;
+  font-weight: bold;
+  font-size: 26px;
+  text-align: center;
+}
+
+#dataComplejosTitle{
+  color: beige;
+  font-weight: bold;
+  font-size: 26px;
+  text-align: center;
+}
+
+.subTituloSeccion {
+  color: beige;
+  font-size: 24px;
+}
+
+#logoIndex {
+  height: 120px;
+  width: 120px;
+}
+
+#cajaLogoIndex {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.validacionTurnoAgregar {
+  color: beige;
+}
+
+#gestionFechaTurno {
+  color: beige;
+  font-weight: bold;
+  font-size: 26px;
+}
+
+#fechaTurno {
+  color: beige;
+  font-size: 26px;
+  font-weight: bold;
 }

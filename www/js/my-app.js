@@ -465,7 +465,7 @@ function buscarturnosComp() {
             $$("#gestionTurnosEliminar").html("<div></div>")
           } else {
             $$("#gestionFechaTurno").text(`Turnos disponibles ${resFechaGestion}`)
-            $$("#gestionTurnosEliminar").append("<h2>Seleccione el turno que desea eliminar</h2>")
+            $$("#gestionTurnosEliminar").append(`<h2 class="validacionTurnoAgregar">Seleccione el turno que desea eliminar</h2>`)
             //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
             for (i = 0; i < turnos.length; i++) {
               divTurnos = $$("#gestionTurnosDisponibles")
@@ -570,8 +570,8 @@ function agregarTurnos() {
             if(estadoTurno == "libre"){
               $$("#gestionTurnosEliminar").html(
                 `
-                  <h2>Seleccione el turno que desea eliminar</h2>
-                  <p>El turno de las ${valor} hs ya se encuentra disponible. Por favor ingrese un horario NO DISPONIBLE</p>
+                  <h2 class="validacionTurnoAgregar">Seleccione el turno que desea eliminar</h2>
+                  <p class="validacionTurnoAgregar">El turno de las ${valor} hs ya se encuentra disponible. Por favor ingrese un horario NO DISPONIBLE</p>
                 `
               )
             }else{
