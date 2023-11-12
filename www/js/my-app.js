@@ -5,7 +5,7 @@ var app = new Framework7({
   // App root element
   root: '#app',
   // App Name
-  name: 'CanchaAPP Rosario',
+  name: 'CanchAPP Rosario',
   // App id
   id: 'com.myapp.test',
   // Enable swipe panel
@@ -49,13 +49,13 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexBtnIni").on('click', inicioSesion)
   //Función Mapa
   platform = new H.service.Platform({
-  	'apikey': 'Zeoh74IHXSw7XSHzbLv-TJmLn8d6Vy8SASX5EgzNfg4'
-   })
+    'apikey': 'Zeoh74IHXSw7XSHzbLv-TJmLn8d6Vy8SASX5EgzNfg4'
+  })
 
-$$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
-//Función idioma (Proximamente)
-$$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
-$$("#btnPrueba").on("click", bankOfUsers)
+  $$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
+  //Función idioma (Proximamente)
+  $$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
+  $$("#btnPrueba").on("click", bankOfUsers)
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -180,9 +180,9 @@ function nuevoRegistroUser() {
 
         $$("#cajaBotonUsersModoDev").html()
 
-        setTimeout(()=>{
+        setTimeout(() => {
           mainView.router.navigate('/reserva/');
-        },3000)
+        }, 3000)
 
 
         console.log(`Se acaba de registrar el usuario ${username} nacido el ${fechaNac} en la localidad de ${localidad}. Su deporte favorito es ${deporte} y lo practiva ${frecuenciaJuego} veces por semana`);
@@ -355,15 +355,15 @@ function buscarCancha() {
         var turnos = []
         result.forEach(function (doc) {
           id = doc.id;
-            id = parseInt(id);
-            turnos.push(id)
-            turnos.sort(function(a, b){return a - b})
-            query = doc.data()
+          id = parseInt(id);
+          turnos.push(id)
+          turnos.sort(function (a, b) { return a - b })
+          query = doc.data()
         })
         if (turnos.length == 0) {
           cajaFechaTurnos = $$("#cajaFechaTurnos")
           cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
-    
+
         } else {
           $$("#fechaTurno").text(`Turnos disponibles ${resFecha}`)
           //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
@@ -464,7 +464,7 @@ function buscarturnosComp() {
             id = doc.id;
             id = parseInt(id);
             turnos.push(id)
-            turnos.sort(function(a, b){return a - b})
+            turnos.sort(function (a, b) { return a - b })
             query = doc.data()
           })
 
@@ -498,7 +498,7 @@ function buscarturnosComp() {
         actualizarTurnos()
         console.log("Promesa cumplida!")
       }
-      
+
       )
       .catch(function (error) {
         console.log("Error: " + error)
@@ -562,30 +562,31 @@ function confirmacionEliminarTurno() {
 function agregarTurnos() {
   texto1 = "Ingrese el horario que desea agregar"
   texto2 = "Nuevo Turno"
-  
-  app.dialog.prompt(texto1, texto2, addHourToDb)
-  
 
-  function addHourToDb(valor){
+  app.dialog.prompt(texto1, texto2, addHourToDb)
+
+
+  function addHourToDb(valor) {
 
     console.log(userSession, resFechaGestion, valor);
     //Se filtran los turnos disponibles en base todos los estados no disponibles
-    colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "ocupado").where("estado", "==","turno anulado").get()
+    colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "ocupado").where("estado", "==", "turno anulado").get()
       .then(function (query) {
         //Se cambia a estado "libre" el turno seleccionado
         turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor).get()
-          .then(function(data) {
+          .then(function (data) {
             estadoTurno = data._delegate._document.data.value.mapValue.fields.estado.stringValue
-            if(estadoTurno == "libre"){
+            if (estadoTurno == "libre") {
               $$("#gestionTurnosEliminar").html(
                 `
                   <h2 class="validacionTurnoAgregar">Seleccione el turno que desea eliminar</h2>
                   <p class="validacionTurnoAgregar">El turno de las ${valor} hs ya se encuentra disponible. Por favor ingrese un horario NO DISPONIBLE</p>
                 `
               )
-            }else{
-            creandoTurno()
-            loaderAddTurno()}
+            } else {
+              creandoTurno()
+              loaderAddTurno()
+            }
           })
           .catch(function (error) {
             console.log("Error: " + error)
@@ -595,55 +596,55 @@ function agregarTurnos() {
         console.log("Error: " + error)
       })
 
-      function creandoTurno() {
+    function creandoTurno() {
 
-        colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
-            .then(function (query) {
-              //Se cambia a estado "ocupado" el turno seleccionado
-              turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor)
-      
-              turnoSeleccionado.update({ estado: "libre" })
-              turnoSeleccionado.update({ reservadoPor: "" })
-      
-            })
-            .catch(function (error) {
-              console.log("Error: " + error)
-            })
-        
-      }
+      colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
+        .then(function (query) {
+          //Se cambia a estado "ocupado" el turno seleccionado
+          turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor)
+
+          turnoSeleccionado.update({ estado: "libre" })
+          turnoSeleccionado.update({ reservadoPor: "" })
+
+        })
+        .catch(function (error) {
+          console.log("Error: " + error)
+        })
+
+    }
   }
 }
 //Función para colocar alerta en modo Dev
-function alertaFuturaSeccion (){
+function alertaFuturaSeccion() {
   app.dialog.alert('Sección a implementar proximamente')
 }
 //Función para traer la lista de usuarios y sus datos
-function bankOfUsers (){
+function bankOfUsers() {
 
 
-  colUsers.where("role","==","normal user").get()
-  .then(function(doc){
-    usuarios = []
-    console.log(usuarios);
-    doc.forEach(function(users){
-      info = users.data()
-      usuarios.push(info)
-    })
+  colUsers.where("role", "==", "normal user").get()
+    .then(function (doc) {
+      usuarios = []
+      console.log(usuarios);
+      doc.forEach(function (users) {
+        info = users.data()
+        usuarios.push(info)
+      })
 
-            //Se despliegan los usuarios registrados en formato de botones para ser seleccionados
-            for (i = 0; i < usuarios.length; i++) {
-              divUsers = $$("#subDataUsers")
-              var usuario = usuarios[i];
-              boton = $$(`
+      //Se despliegan los usuarios registrados en formato de botones para ser seleccionados
+      for (i = 0; i < usuarios.length; i++) {
+        divUsers = $$("#subDataUsers")
+        var usuario = usuarios[i];
+        boton = $$(`
                           <li>
                             <input type="button" id="boton${i}" value="${usuario.email}" class="button button-small button-outline color-green botonUsers"></input><br>                            
                           </li>
                           `)
-              divUsers.append(boton)
-              boton.data("valor", `${i}`)
-              boton.on("click", function () {
-                var valor = $$(this).data("valor");
-                $$("#dataUsers").html(`
+        divUsers.append(boton)
+        boton.data("valor", `${i}`)
+        boton.on("click", function () {
+          var valor = $$(this).data("valor");
+          $$("#dataUsers").html(`
                           <h3 class="subTituloSeccion">Datos del usuario</h3>
                           <p class="dato">Ciudad: ${usuarios[valor].ciudad}</p>
                           <p class="dato">Fecha de nacimiento: ${usuarios[valor].fechaN}</p>
@@ -652,47 +653,48 @@ function bankOfUsers (){
                           <p class="dato">Cantidad de visitas: ${usuarios[valor].cantVisitas}</p>
                           <p class="dato">Rol: ${usuarios[valor].role}</p>
         `)
-                latitud = usuarios[valor].posicion.latitud
-                longitud = usuarios[valor].posicion.longitud
-                $$("#cajaInfoUSers").removeClass("cajaDataUsersHide").addClass("cajaDataUsers")
-                $$(".cajaMapaUsers").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
-                hereMaps()
+          latitud = usuarios[valor].posicion.latitud
+          longitud = usuarios[valor].posicion.longitud
+          $$("#cajaInfoUSers").removeClass("cajaDataUsersHide").addClass("cajaDataUsers")
+          $$(".cajaMapaUsers").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
+          hereMaps()
 
-      })}
+        })
+      }
 
       $$("#cajaBotonUsersModoDev").html(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
-    
-  })
-  .catch(function(error){
-    console.log(error.message);
-  })
+
+    })
+    .catch(function (error) {
+      console.log(error.message);
+    })
 
 }
 //Función para traer la lista de usuarios y sus datos
-function bankOfComplejos (){
+function bankOfComplejos() {
 
-  colUsers.where("role","==","complejo").get()
-  .then(function(doc){
-    complejos = []
-    doc.forEach(function(comp){
-      infoComplejo = comp.data()
-      complejos.push(infoComplejo)
-    })
+  colUsers.where("role", "==", "complejo").get()
+    .then(function (doc) {
+      complejos = []
+      doc.forEach(function (comp) {
+        infoComplejo = comp.data()
+        complejos.push(infoComplejo)
+      })
 
-            //Se despliegan los usuarios registrados en formato de botones para ser seleccionados
-            for (i = 0; i < complejos.length; i++) {
-              divComplejos = $$("#subDataComplejos")
-              var complejo = complejos[i];
-              boton = $$(`
+      //Se despliegan los usuarios registrados en formato de botones para ser seleccionados
+      for (i = 0; i < complejos.length; i++) {
+        divComplejos = $$("#subDataComplejos")
+        var complejo = complejos[i];
+        boton = $$(`
                           <li>
                             <input type="button" id="boton${i}" value="${complejo.email}" class="button button-small button-outline color-green botonUsers"></input><br>                            
                           </li>
                           `)
-              divComplejos.append(boton)
-              boton.data("valor", `${i}`)
-              boton.on("click", function () {
-                var valor = $$(this).data("valor");
-                $$("#dataComplejos").html(`
+        divComplejos.append(boton)
+        boton.data("valor", `${i}`)
+        boton.on("click", function () {
+          var valor = $$(this).data("valor");
+          $$("#dataComplejos").html(`
                           <h3 class="subTituloSeccion">Datos del complejo</h3>
                           <p class="dato">Ciudad: ${complejos[valor].ciudad}</p>
                           <p class="dato">Fecha de nacimiento: ${complejos[valor].fechaN}</p>
@@ -701,51 +703,52 @@ function bankOfComplejos (){
                           <p class="dato">Cantidad de visitas: ${complejos[valor].cantVisitas}</p>
                           <p class="dato">Rol: ${complejos[valor].role}</p>
         `)
-                latitud = complejos[valor].posicion.latitud
-                longitud = complejos[valor].posicion.longitud
-                $$("#cajaInfoComplejos").removeClass("cajaDataComplejosHide").addClass("cajaDataComplejos")
-                $$(".cajaMapaComplejos").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
-                hereMaps()
+          latitud = complejos[valor].posicion.latitud
+          longitud = complejos[valor].posicion.longitud
+          $$("#cajaInfoComplejos").removeClass("cajaDataComplejosHide").addClass("cajaDataComplejos")
+          $$(".cajaMapaComplejos").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
+          hereMaps()
 
-      })}
+        })
+      }
 
       $$("#cajaBotonComplejossModoDev").html(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
-    
-  })
-  .catch(function(error){
-    console.log(error.message);
-  })
+
+    })
+    .catch(function (error) {
+      console.log(error.message);
+    })
 }
 //Función volver a modoDev
-function volverModoDev(){
-  if(roleSession == "dev"){
+function volverModoDev() {
+  if (roleSession == "dev") {
     $$("#cajaBtnBuscarComplejos").append(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
     $$("#cajaBtnBuscarReserva").append(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
-    
+
   }
 }
 
 //Función Maps HERE
 //Api key: Zeoh74IHXSw7XSHzbLv-TJmLn8d6Vy8SASX5EgzNfg4
 //APP id: 9xux4DV2SjkLJ7aiw8FC
-function hereMaps (){
+function hereMaps() {
 
   var defaultLayers = platform.createDefaultLayers();
- 
-	// Instantiate (and display) a map object:
-	map = new H.Map(
-        document.getElementById('mapContainer'),
-    	defaultLayers.vector.normal.map,
-    	{
-      	zoom: 15,
-      	center: { lat: latitud, lng: longitud }
-        });
- 
-    	coords = {lat: latitud, lng: longitud};
-    	marker = new H.map.Marker(coords);
- 
-    	// Add the marker to the map and center the map at the location of the marker:
-    	map.addObject(marker);
-    	map.setCenter(coords);
+
+  // Instantiate (and display) a map object:
+  map = new H.Map(
+    document.getElementById('mapContainer'),
+    defaultLayers.vector.normal.map,
+    {
+      zoom: 15,
+      center: { lat: latitud, lng: longitud }
+    });
+
+  coords = { lat: latitud, lng: longitud };
+  marker = new H.map.Marker(coords);
+
+  // Add the marker to the map and center the map at the location of the marker:
+  map.addObject(marker);
+  map.setCenter(coords);
 
 }
