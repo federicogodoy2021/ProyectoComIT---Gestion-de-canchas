@@ -1146,3 +1146,39 @@ a {
   font-size: 26px;
   font-weight: bold;
 }
+
+.cajaDataComplejosHide{
+  display: none;
+  visibility: hidden;
+}
+.cajaDataComplejos{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 300px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.cajaMapaComplejos{
+  width: 600px;
+  height: 250px;
+}
+
+.cajaDataUsersHide{
+  display: none;
+  visibility: hidden;
+}
+.cajaDataUsers{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 300px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.cajaMapaUsers{
+  width: 600px;
+  height: 250px;
+}

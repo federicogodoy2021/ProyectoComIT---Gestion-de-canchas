@@ -47,7 +47,11 @@ $$(document).on('page:init', function (e) {
 $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexNuevaCuenta").on('click', aP1Registro)
   $$("#indexBtnIni").on('click', inicioSesion)
-  //Función idioma (Proximamente)
+  //Función Mapa
+  platform = new H.service.Platform({
+  	'apikey': 'Zeoh74IHXSw7XSHzbLv-TJmLn8d6Vy8SASX5EgzNfg4'
+   })
+
 $$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
 //Función idioma (Proximamente)
 $$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
@@ -105,7 +109,9 @@ $$(document).on('page:init', '.page[data-name="dataComplejos"]', function (e) {
 
 //Variables globales Datos
 //Usuarios
-var nombre, emailReg, emailSession, passwordReg, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username, latitud, longitud
+var nombre, emailReg, emailSession, passwordReg, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username
+//Mapas
+var latitud, longitud, map, platform, pos
 
 //Variables globales Colecciones
 db = firebase.firestore()
@@ -646,6 +652,12 @@ function bankOfUsers (){
                           <p class="dato">Cantidad de visitas: ${usuarios[valor].cantVisitas}</p>
                           <p class="dato">Rol: ${usuarios[valor].role}</p>
         `)
+                latitud = usuarios[valor].posicion.latitud
+                longitud = usuarios[valor].posicion.longitud
+                $$("#cajaInfoUSers").removeClass("cajaDataUsersHide").addClass("cajaDataUsers")
+                $$(".cajaMapaUsers").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
+                hereMaps()
+
       })}
 
       $$("#cajaBotonUsersModoDev").html(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
@@ -689,6 +701,12 @@ function bankOfComplejos (){
                           <p class="dato">Cantidad de visitas: ${complejos[valor].cantVisitas}</p>
                           <p class="dato">Rol: ${complejos[valor].role}</p>
         `)
+                latitud = complejos[valor].posicion.latitud
+                longitud = complejos[valor].posicion.longitud
+                $$("#cajaInfoComplejos").removeClass("cajaDataComplejosHide").addClass("cajaDataComplejos")
+                $$(".cajaMapaComplejos").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
+                hereMaps()
+
       })}
 
       $$("#cajaBotonComplejossModoDev").html(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
@@ -705,4 +723,29 @@ function volverModoDev(){
     $$("#cajaBtnBuscarReserva").append(`<a id="volverAModoDev" class="button button-fill color-blue" href="/modoDev/">Volver</a>`)
     
   }
+}
+
+//Función Maps HERE
+//Api key: Zeoh74IHXSw7XSHzbLv-TJmLn8d6Vy8SASX5EgzNfg4
+//APP id: 9xux4DV2SjkLJ7aiw8FC
+function hereMaps (){
+
+  var defaultLayers = platform.createDefaultLayers();
+ 
+	// Instantiate (and display) a map object:
+	map = new H.Map(
+        document.getElementById('mapContainer'),
+    	defaultLayers.vector.normal.map,
+    	{
+      	zoom: 15,
+      	center: { lat: latitud, lng: longitud }
+        });
+ 
+    	coords = {lat: latitud, lng: longitud};
+    	marker = new H.map.Marker(coords);
+ 
+    	// Add the marker to the map and center the map at the location of the marker:
+    	map.addObject(marker);
+    	map.setCenter(coords);
+
 }
