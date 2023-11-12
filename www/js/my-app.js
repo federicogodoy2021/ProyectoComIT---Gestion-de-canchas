@@ -172,9 +172,12 @@ function nuevoRegistroUser() {
         emailSession = emailReg
         mainView.router.navigate('/loggedIn/');
 
+        $$("#cajaBotonUsersModoDev").html()
+
         setTimeout(()=>{
           mainView.router.navigate('/reserva/');
         },3000)
+
 
         console.log(`Se acaba de registrar el usuario ${username} nacido el ${fechaNac} en la localidad de ${localidad}. Su deporte favorito es ${deporte} y lo practiva ${frecuenciaJuego} veces por semana`);
       })
@@ -390,7 +393,7 @@ function buscarCancha() {
 function nuevaBusqueda() {
   setTimeout(() => {
     mainView.router.navigate("/reserva/")
-  }, 6000)
+  }, 12000)
 }
 
 //Función para tomar un turno
