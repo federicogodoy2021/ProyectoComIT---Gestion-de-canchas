@@ -55,7 +55,7 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
   //Función idioma (Proximamente)
   $$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
-  $$("#btnPrueba").on("click", bankOfUsers)
+  //$$("#btnPrueba").on("click",)
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -78,8 +78,11 @@ $$(document).on('page:init', '.page[data-name="loggedIn"]', function (e) {
 $$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
   $$("#btnBuscar").on('click', buscarCancha)
   volverModoDev()
+  $$("#reservaComplejo").on("change", optionsCanchasReserva)
+  $$("#reservaDeporte").on("change", optionsDeporteReserva)
 })
 $$(document).on('page:init', '.page[data-name="turnos"]', function (e) {
+
 })
 $$(document).on('page:init', '.page[data-name="confirmacionTurno"]', function (e) {
   $$("#confirmacionTurno").text(`El turno fue seleccionado para jugar al ${resDeporte} el día ${resFecha} en el complejo ${resComplejo} a las ${horaTurno} Hs.`)
@@ -89,6 +92,7 @@ $$(document).on('page:init', '.page[data-name="confirmacionTurno"]', function (e
 $$(document).on('page:init', '.page[data-name="seccionComplejos"]', function (e) {
   $$("#gestionbtnBuscar").on('click', buscarturnosComp)
   volverModoDev()
+  $$("#reservaDeporteSeccComp").on("change", optionsSeccionComplejos)
 })
 $$(document).on('page:init', '.page[data-name="turnosC"]', function (e) {
   $$("#gestionAgregarTurno").on("click", agregarTurnos)
@@ -109,7 +113,7 @@ $$(document).on('page:init', '.page[data-name="dataComplejos"]', function (e) {
 
 //Variables globales Datos
 //Usuarios
-var nombre, emailReg, emailSession, passwordReg, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username
+var nombre, emailReg, emailSession, passwordReg, passwordReg2, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username
 //Mapas
 var latitud, longitud, map, platform, pos
 
@@ -118,10 +122,9 @@ db = firebase.firestore()
 var colUsers = db.collection("USERS")
 var colComplejos = db.collection("COMPLEJOS")
 var colReservas = db.collection("RESERVAS")
-var colTurnos = db.collection("TURNOS")
 
 //Variables globales Reservas
-var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, resFechaGestion, actualizarTurnos, horaTurno
+var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, resFechaGestion, actualizarTurnos, horaTurno, tipoCanchaSeccComp
 
 
 //Funciones
@@ -139,13 +142,31 @@ function aP2Registro() {
 
 //Pasar de pantalla 3 en el registro de usuario
 function aP3Registro() {
-  mainView.router.navigate("/opReg3/")
+
   passwordReg = $$("#op2RegInputPass").val()
+  passwordReg2 = $$("#op2RegInputPass2").val()
+
+  if (passwordReg === passwordReg2) {
+    if (passwordReg.length > 5) {
+      mainView.router.navigate("/opReg3/")
+
+    } else {
+      $$("#validacionPass").text("La contraseña debe contener al menos 6 caracteres")
+    }
+  } else {
+    $$("#validacionPass").text("Verifique que las constraseñas sean iguales")
+  }
+
 }
 
 //Pasar de pantalla 4 en el registro de usuario
 function aP4Registro() {
-  mainView.router.navigate("/opReg4/")
+  localidad = $$("#op3RegInputLoca").val()
+  if (localidad !== "") {
+    mainView.router.navigate("/opReg4/")
+  } else {
+    $$("#validacionLoc").text("Por favor ingrese una localidad")
+  }
 }
 
 //Pasar a pantalla de reserva
@@ -349,7 +370,8 @@ function buscarCancha() {
   if (resComplejo !== "---" && resDeporte !== "---" && resTipoCancha !== "---" && resFecha !== "") {
     mainView.router.navigate('/turnos/');
     //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
-    colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
+
+    colComplejos.doc(resComplejo).collection("canchas").doc(resTipoCancha).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
       .then(function (result) {
         //Se retornan los turnos disponibles
         var turnos = []
@@ -405,10 +427,10 @@ function nuevaBusqueda() {
 //Función para tomar un turno
 function tomarTurno() {
   //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
-  colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
+  colComplejos.doc(resComplejo).collection("canchas").doc(resTipoCancha).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
     .then(function (query) {
 
-      turnoSeleccionado = colTurnos.doc(resComplejo).collection("fechas").doc(resFecha).collection("horas").doc(horaTurno)
+      turnoSeleccionado = colComplejos.doc(resComplejo).collection("canchas").doc(resTipoCancha).collection("fechas").doc(resFecha).collection("horas").doc(horaTurno)
       //Actualización de campos del turno
       turnoSeleccionado.update({ estado: "ocupado" })
       turnoSeleccionado.update({ reservadoPor: `${emailSession}` })
@@ -451,11 +473,11 @@ function guardarReserva() {
 //Funcion realizar consulta de turno
 function buscarturnosComp() {
   resFechaGestion = $$("#gestionTurnosFecha").val()
-
+  tipoCanchaSeccComp = $$("#reservaTipoCanchaSeccComp").val()
   if (resFechaGestion !== "") {
     mainView.router.navigate('/turnosC/');
     //Se filtran los turnos disponibles en base a la fecha seleccionada
-    colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
+    colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
       .then(function (result) {
         actualizarTurnos = function desplegarTurnos() {
           //Se retornan los turnos disponibles
@@ -539,10 +561,10 @@ function confirmacionEliminarTurno() {
 
   function confirmDeleteTurno() {
     //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
-    colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
+    colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
       .then(function (query) {
         //Se cambia a estado "ocupado" el turno seleccionado
-        turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(horaTurno)
+        turnoSeleccionado = colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").doc(horaTurno)
 
         turnoSeleccionado.update({ estado: "turno anulado" })
 
@@ -570,10 +592,10 @@ function agregarTurnos() {
 
     console.log(userSession, resFechaGestion, valor);
     //Se filtran los turnos disponibles en base todos los estados no disponibles
-    colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "ocupado").where("estado", "==", "turno anulado").get()
+    colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "ocupado").where("estado", "==", "turno anulado").get()
       .then(function (query) {
         //Se cambia a estado "libre" el turno seleccionado
-        turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor).get()
+        turnoSeleccionado = colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor).get()
           .then(function (data) {
             estadoTurno = data._delegate._document.data.value.mapValue.fields.estado.stringValue
             if (estadoTurno == "libre") {
@@ -597,11 +619,10 @@ function agregarTurnos() {
       })
 
     function creandoTurno() {
-
-      colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
+      colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
         .then(function (query) {
           //Se cambia a estado "ocupado" el turno seleccionado
-          turnoSeleccionado = colTurnos.doc(userSession).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor)
+          turnoSeleccionado = colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor)
 
           turnoSeleccionado.update({ estado: "libre" })
           turnoSeleccionado.update({ reservadoPor: "" })
@@ -752,3 +773,76 @@ function hereMaps() {
   map.setCenter(coords);
 
 }
+
+//Función para recuperar opciones selector de canchas formulario
+function optionsCanchasReserva() {
+
+  //Agregando opciones a selector de canchas
+  resComplejo = $$("#reservaComplejo").val()
+  $$("#reservaTipoCancha").html(`<option selected value="---">Seleccione una cancha</option>`)
+  colComplejos.doc(resComplejo).collection("canchas").get()
+    .then(function (response) {
+      opCanchas = []
+      response.forEach(function (doc) {
+        canchas = doc.id
+        opCanchas.push(canchas)
+      })
+      for (i = 0; i < opCanchas.length; i++) {
+        $$("#reservaTipoCancha").append(`<option id="op${opCanchas[i]}" value="${opCanchas[i]}">${opCanchas[i]}</option>`)
+      }
+    })
+    .catch(function (err) {
+      console.log(err);
+    })
+}
+//Función para recuperar opciones para formulario
+function optionsDeporteReserva() {
+
+  //Agregando opciones a selector de canchas
+  resDeporte = $$("#reservaDeporte").val()
+
+  if (resDeporte == "futbol") {
+    $$("#reservaComplejo").html(`<option selected value="---">Seleccione un Complejo</option>`)
+    colComplejos.get()
+      .then(function (response) {
+        opComplejos = []
+        response.forEach(function (doc) {
+          complejos = doc.id
+          opComplejos.push(complejos)
+        })
+        for (i = 0; i < opComplejos.length; i++) {
+          $$("#reservaComplejo").append(`<option id="op${opComplejos[i]}" value="${opComplejos[i]}">${opComplejos[i]}</option>`)
+        }
+      })
+      .catch(function (err) {
+        console.log(err);
+      })
+
+  }
+}
+
+function optionsSeccionComplejos() {
+
+  //Agregando opciones a selector de canchas
+  resDeporte = $$("#reservaDeporteSeccComp").val()
+
+  if (resDeporte == "futbol") {
+    $$("#reservaTipoCanchaSeccComp").html(`<option selected value="---">Seleccione una cancha</option>`)
+    colComplejos.doc(userSession).collection("canchas").get()
+      .then(function (response) {
+        opComplejos = []
+        response.forEach(function (doc) {
+          complejos = doc.id
+          opComplejos.push(complejos)
+        })
+        for (i = 0; i < opComplejos.length; i++) {
+          $$("#reservaTipoCanchaSeccComp").append(`<option id="op${opComplejos[i]}" value="${opComplejos[i]}">${opComplejos[i]}</option>`)
+        }
+      })
+      .catch(function (err) {
+        console.log(err);
+      })
+
+  }
+}
+

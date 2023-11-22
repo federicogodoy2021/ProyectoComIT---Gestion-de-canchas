@@ -1,27 +1,33 @@
 <!-- We don't need a full layout in this file because this page will be parsed with Ajax.  -->
 <div id="paginas" class="page" data-name="reserva">
 
-    <div class="page-content">
+  <div class="page-content">
     <!-- ------------------------ Barra de navegación ------------------------ -->
-      <div class="navbar">
-        <div id="barraNav" class="navbar-bg"></div>
-        <div class="navbar-inner">
-            <div class="title colorFont"><h2>Reserva</h2></div>
-            <div class="right">
-              <div class="list accordion-list accordion-opposite">
-                <ul>
-                  <li class="accordion-item">
-                    <a href="" class="item-link item-content">
-                      <div class="item-inner">
-                        <div class="item-title"><p class="colorFont labelsForm">Menu</p></div>
-                      </div>
-                    </a>
-                    <div class="accordion-item-content"><a id="btnCerrarSesion" href="/loggedOut/"><p class="colorFont labelsForm">Cerrar Sesión</p></a></div>
-                  </li>
-                </ul>
-              </div>
-            </div>
+    <div class="navbar">
+      <div id="barraNav" class="navbar-bg"></div>
+      <div class="navbar-inner">
+        <div class="title colorFont">
+          <h2>Reserva</h2>
         </div>
+        <div class="right">
+          <div class="list accordion-list accordion-opposite">
+            <ul>
+              <li class="accordion-item">
+                <a href="" class="item-link item-content">
+                  <div class="item-inner">
+                    <div class="item-title">
+                      <p class="colorFont labelsForm">Menu</p>
+                    </div>
+                  </div>
+                </a>
+                <div class="accordion-item-content"><a id="btnCerrarSesion" href="/loggedOut/">
+                    <p class="colorFont labelsForm">Cerrar Sesión</p>
+                  </a></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="block">
       <h1></h1>
@@ -34,15 +40,12 @@
             <i class="icon demo-list-icon"></i>
           </div>
           <div class="item-inner">
-            <!-- ------------------------ Selección de complejo ------------------------ -->
-            <label>Complejo</label>
+            <!-- ------------------------ Selección de deporte ------------------------- -->
+            <label>Deporte</label>
             <div class="item-input-wrap input-dropdown-wrap">
-              <select id="reservaComplejo" placeholder="Elige el complejo">
-                <option selected value="---">Seleccione el complejo</option>
-                <option value="Todos">Todos</option>
-                <option value="complejo1">Complejo 1</option>
-                <option value="complejo2">Complejo 2</option>
-                <option value="complejo3">Complejo 3</option>
+              <select id="reservaDeporte" placeholder="Elige el deporte">
+                <option selected value="---">Seleccione un deporte</option>
+                <option value="futbol">Futbol</option>
               </select>
             </div>
           </div>
@@ -52,14 +55,11 @@
             <i class="icon demo-list-icon"></i>
           </div>
           <div class="item-inner">
-            <!-- ------------------------ Selección de deporte ------------------------- -->
-            <label>Deporte</label>
+            <!-- ------------------------ Selección de complejo ------------------------ -->
+            <label>Complejo</label>
             <div class="item-input-wrap input-dropdown-wrap">
-              <select id="reservaDeporte" placeholder="Elige el deporte">
-                <option selected value="---">Seleccione un deporte</option>
-                <option value="futbol">Futbol</option>
-                <option value="tenis">Tenis</option>
-                <option value="Paddel">Paddel</option>
+              <select id="reservaComplejo" placeholder="Elige el complejo">
+                <option selected value="---">Seleccione el complejo</option>
               </select>
             </div>
           </div>
@@ -74,10 +74,6 @@
             <div class="item-input-wrap input-dropdown-wrap">
               <select id="reservaTipoCancha" placeholder="Elige el complejo">
                 <option selected value="---">Seleccione una cancha</option>
-                <option value="Todas">Todas</option>
-                <option value="1">Cancha 1</option>
-                <option value="2">Cancha 2</option>
-                <option value="3">Cancha 3</option>
               </select>
             </div>
           </div>
@@ -99,7 +95,8 @@
     <div class="grid grid-cols-1" id="cajaValidacionForm"></div>
     <!-- --------------------------- Botón Buscar --------------------------- -->
     <div id="cajaBtnBuscarReserva" class="grid grid-cols-1 grid-gap">
-      <a  id="btnBuscar" class="button button-large button-fill button-preloader" class="list-button">BUSCAR TURNOS DISPONIBLES</a>
+      <a id="btnBuscar" class="button button-large button-fill button-preloader" class="list-button">BUSCAR TURNOS
+        DISPONIBLES</a>
     </div>
   </div>
 </div>
