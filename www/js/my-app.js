@@ -55,7 +55,7 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
   //Función idioma (Proximamente)
   $$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
-  //$$("#btnPrueba").on("click",)
+  $$("#btnPrueba").on("click", optionsCanchasReserva)
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -781,6 +781,7 @@ function optionsCanchasReserva() {
   resComplejo = $$("#reservaComplejo").val()
   $$("#reservaTipoCancha").html(`<option selected value="---">Seleccione una cancha</option>`)
   colComplejos.doc(resComplejo).collection("canchas").get()
+  //colComplejos.doc("complejo1").collection("canchas").get()
     .then(function (response) {
       opCanchas = []
       response.forEach(function (doc) {
@@ -790,6 +791,22 @@ function optionsCanchasReserva() {
       for (i = 0; i < opCanchas.length; i++) {
         $$("#reservaTipoCancha").append(`<option id="op${opCanchas[i]}" value="${opCanchas[i]}">${opCanchas[i]}</option>`)
       }
+
+        colComplejos.doc(resComplejo).get()
+        //colComplejos.doc("complejo1").get()
+        .then(function(response){
+          info = response.data()
+          latitud = info.posicion.latitud
+          longitud = info.posicion.longitud
+          $$("#cajaContenedorMapa").removeClass("divContainerMapaHide").addClass("divContainerMapa")
+          $$(".subtituloMapaComp").text(info.nombre)
+          $$(".cajaMapaReserva").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
+          hereMaps()
+        })
+        .catch(function(err) {
+          console.log(err);
+        })
+
     })
     .catch(function (err) {
       console.log(err);
@@ -802,7 +819,7 @@ function optionsDeporteReserva() {
   resDeporte = $$("#reservaDeporte").val()
 
   if (resDeporte == "futbol") {
-    $$("#reservaComplejo").html(`<option selected value="---">Seleccione un Complejo</option>`)
+    $$("#reservaComplejo").html(`<option selected value="---">Seleccione un complejo</option>`)
     colComplejos.get()
       .then(function (response) {
         opComplejos = []

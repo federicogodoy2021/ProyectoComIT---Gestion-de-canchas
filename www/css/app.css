@@ -1184,3 +1184,29 @@ a {
   width: 600px;
   height: 250px;
 }
+.cajaMapaReserva{
+  width: 600px;
+  height: 250px;
+}
+#cajaContenedorMapa{
+  margin-bottom: 20px;
+}
+.divContainerMapaHide{
+  display: none;
+  visibility: hidden;
+}
+.divContainerMapa{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+#mapContainer{
+  margin: 20px;
+}
+#cajaBtnBuscarReserva{
+  margin-top: 70px;
+}
+.subtituloMapaComp{
+  color: beige;
+}
