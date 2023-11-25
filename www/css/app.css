@@ -1210,3 +1210,17 @@ a {
 .subtituloMapaComp{
   color: beige;
 }
+#btnAperturaRegComp{
+  background-color: #b3924c;
+
+}
+#textoBtnRegComp{
+  text-align: center;
+  font-weight: bold;
+  font-size: 30px;
+  padding-bottom: 5px;
+}
+.flechaRegComp{
+  font-weight: bold;
+  font-size: 20px;
+}

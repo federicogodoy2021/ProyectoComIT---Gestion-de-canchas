@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <!--
         Customize this policy to fit your own app's needs. For more guidance, see:
@@ -14,7 +15,8 @@
 -->
     <!-- Required meta tags-->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
@@ -22,7 +24,7 @@
     <!-- <meta name="theme-color" content="#2196f3"> -->
     <meta name="color-scheme" content="light dark">
 
-    <!-- Your app title --> 
+    <!-- Your app title -->
     <title>⚽ CanchAPP Rosario</title>
     <!-- Path to Framework7 Library CSS -->
     <link rel="stylesheet" href="lib/framework7/framework7-bundle.css">
@@ -35,7 +37,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300&display=swap" rel="stylesheet">
     <!-- ------------------------------ Maps HERE ------------------------------ -->
     <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
-	<script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
@@ -44,13 +46,13 @@
     <div id="app">
         <!-- Statusbar overlay -->
         <div class="statusbar"></div>
-    
+
         <!-- Your main view, should have "view-main" class -->
         <div class="view view-main">
-       
 
-        
-        <!-- Initial Page, "data-name" contains page name -->
+
+
+            <!-- Initial Page, "data-name" contains page name -->
             <div id="paginas" data-name="index" class="page">
                 <!-- Scrollable page content -->
                 <div class="page-content">
@@ -66,32 +68,35 @@
                                 <div class="item-content">
                                     <div class="item-inner">
                                         <div id="tituloIdioma" class="item-title">Idioma</div>
-                                  </div>
+                                    </div>
                                 </div>
                             </a>
                         </div>
                         <!-- ------------------------------ -------- ------------------------------- -->
                         <div class="grid grid-cols-1 grid-gap">
-                            <div id="cajaLogoIndex" class="item-media"><img id="logoIndex" src="./img/logo1.png" alt=""></div>
+                            <div id="cajaLogoIndex" class="item-media"><img id="logoIndex" src="./img/logo1.png" alt="">
+                            </div>
                         </div>
                         <!-- ------------------------------ -------- ------------------------------- -->
-                        
+
                         <!-- ----------------- Ingreso de Usuario, email o celular ----------------- -->
                         <div id="cajaUsuario" class="grid grid-cols-1">
                             <div class="list list-strong-ios list-dividers-ios inset-ios">
                                 <ul>
                                     <li class="item-content item-input">
                                         <div class="item-media">
-                                          <i class="icon demo-list-icon"></i>
+                                            <i class="icon demo-list-icon"></i>
                                         </div>
                                         <div class="item-inner">
-                                          <div id="indexEtiqlUser" class="item-title item-label">Nombre de usuario, email o celular</div>
-                                          <div class="item-input-wrap">
-                                            <input id="indexInputUser" type="email" placeholder="Ingrese su usuario" required validate>
-                                            <span class="input-clear-button"></span>
-                                          </div>
+                                            <div id="indexEtiqlUser" class="item-title item-label">Nombre de usuario,
+                                                email o celular</div>
+                                            <div class="item-input-wrap">
+                                                <input id="indexInputUser" type="email" placeholder="Ingrese su usuario"
+                                                    required validate>
+                                                <span class="input-clear-button"></span>
+                                            </div>
                                         </div>
-                                      </li>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -101,13 +106,15 @@
                                 <ul>
                                     <li class="item-content item-input">
                                         <div class="item-media">
-                                          <i class="icon demo-list-icon"></i>
+                                            <i class="icon demo-list-icon"></i>
                                         </div>
                                         <div class="item-inner">
                                             <div id="indexEtiqPass" class="item-title item-label">Contraseña</div>
                                             <div class="item-input-wrap">
-                                              <input id="indexInputPass" type="password" name="password" id="demo-password-1" placeholder="Ingrese su contraseña" required validate/>
-                                              <span class="input-clear-button"></span>
+                                                <input id="indexInputPass" type="password" name="password"
+                                                    id="demo-password-1" placeholder="Ingrese su contraseña" required
+                                                    validate />
+                                                <span class="input-clear-button"></span>
                                             </div>
                                         </div>
                                     </li>
@@ -118,20 +125,38 @@
                         </div>
                         <!-- ---------------------- Boton de inicio de sesión ---------------------- -->
                         <div class="grid grid-cols-1 grid-gap">
-                            <a id="indexBtnIni" class="button button-large button-fill button-preloader" class="list-button">Iniciar Sesión</a>
+                            <a id="indexBtnIni" class="button button-large button-fill button-preloader"
+                                class="list-button">Iniciar Sesión</a>
                         </div>
                         <!-- -------------------- Boton de olvido de contraseña -------------------- -->
                         <div class="grid grid-cols-1 grid-gap">
-                            <a id="indexOlviPass" class="button button-fill color-black" href="">¿Olvidaste tu contraseña?</a>
+                            <a id="indexOlviPass" class="button button-fill color-black" href="">¿Olvidaste tu
+                                contraseña?</a>
                         </div>
                         <!-- -------------------- Boton para crear nueva cuenta -------------------- -->
                         <div class="grid grid-cols-1 grid-gap">
                             <a id="indexNuevaCuenta" class="button button-fill color-black">Crear una cuenta nueva</a>
                         </div>
+                        <!-- ------------------------- Registro de complejos -------------------------- -->
+                        <div class="fab fab-right-top">
+                            <a id="btnAperturaRegComp">
+                                <i id="textoBtnRegComp" class="icon f7-icons if-not-md">plus</i>
+                                <i id="textoBtnRegComp" class="icon f7-icons if-not-md">xmark</i>
+                                <i id="textoBtnRegComp" class="icon material-icons md-only">+</i>
+                                <i id="textoBtnRegComp" class="icon material-icons md-only">-</i>
+                            </a>
+                            <div class="fab-buttons fab-buttons-bottom">
+                                <a id="btnAperturaRegComp" href="/registroComplejo/" class="fab-label-button">
+                                    <span class="flechaRegComp">↗</span>
+                                    <span id="btnAperturaRegComp" class="fab-label">¿Querés registrar tu
+                                        complejo?</span>
+                                </a>
+                            </div>
+                        </div>
                         <!-- -------------------- Boton extra para pruebas -------------------- -->
-<!--                         <div class="grid grid-cols-1 grid-gap">
-                            <a id="btnPrueba" class="button button-fill color-black">BTN PRUEBA</a>
-                        </div> -->
+                                                <div class="grid grid-cols-1 grid-gap">
+                            <a href="//" id="btnPrueba" class="button button-fill color-black">BTN PRUEBA</a>
+                        </div>
                     </div>
                 </div>
             </div>

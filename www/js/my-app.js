@@ -28,7 +28,9 @@ var app = new Framework7({
     { path: '/turnosC/', url: 'turnosC.html', options: { transition: 'f7-cover' } },
     { path: '/modoDev/', url: 'modoDev.html', options: { transition: 'f7-cover' } },
     { path: '/dataUsers/', url: 'dataUsers.html', options: { transition: 'f7-cover' } },
-    { path: '/dataComplejos/', url: 'dataComplejos.html', options: { transition: 'f7-cover' } }
+    { path: '/dataComplejos/', url: 'dataComplejos.html', options: { transition: 'f7-cover' } },
+    { path: '/registroComplejo/', url: 'registroComplejo.html', options: { transition: 'f7-cover' } },
+    { path: '/registroTurnosComplejo/', url: 'registroTurnosComplejo.html', options: { transition: 'f7-cover' } }
   ]
   // ... other parameters
 });
@@ -55,7 +57,7 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
   //Función idioma (Proximamente)
   $$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
-  $$("#btnPrueba").on("click", optionsCanchasReserva)
+  $$("#btnPrueba").on("click", algo)
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -108,6 +110,13 @@ $$(document).on('page:init', '.page[data-name="dataUsers"]', function (e) {
 $$(document).on('page:init', '.page[data-name="dataComplejos"]', function (e) {
   $$("#btnDataComplejos").on("click", bankOfComplejos)
 })
+$$(document).on('page:init', '.page[data-name="registroComplejo"]', function (e) {
+  getPositionGPS()
+  $$("#finRegComp").on("click", registroComplejo)
+})
+$$(document).on('page:init', '.page[data-name="registroTurnosComplejo"]', function (e) {
+  $$("#agregarFechaComp").on("click", agregarTurnosABaseDatos)
+})
 
 /* ----------------------- -------------------------- ----------------------- */
 
@@ -126,6 +135,8 @@ var colReservas = db.collection("RESERVAS")
 //Variables globales Reservas
 var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, resFechaGestion, actualizarTurnos, horaTurno, tipoCanchaSeccComp
 
+//Variables globales registro Complejos
+var nombreComplejo, correoComplejo, contraseñaComplejo, fechaComplejo, localidadComplejo, futbolComplejo, tenisComplejo, padelComplejo, basketComplejo, usuarioComplejo
 
 //Funciones
 //Pasar de pantalla donde comienza el paso 1 para registro de usuario
@@ -241,6 +252,7 @@ function inicioSesion() {
             res.forEach(function (doc) {
               roleSession = doc.data().role
               userSession = doc.data().usuario
+              nombreComplejo = doc.data().nombre
 
               $$("#userLoggedIn").text(emailSession)
               //Ingreso dependiendo del role de usuario
@@ -253,7 +265,7 @@ function inicioSesion() {
               } else if (roleSession == "complejo") {
                 mainView.router.navigate('/loggedIn/');
                 setTimeout(() => {
-                  mainView.router.navigate("/seccionComplejos/")
+                  mainView.router.navigate("/registroTurnosComplejo/")
                 }, 3000)
               } else if (roleSession == "dev") {
                 mainView.router.navigate('/loggedIn/');
@@ -305,6 +317,31 @@ function addUserToDB() {
   var myId = emailReg
 
   colUsers.doc(myId).set(datos)
+    .then(function (docRef) {
+      console.log("Doc ref con el id = " + myId)
+    })
+    .catch(function (error) {
+      console.log("Error: " + error)
+    })
+}
+
+//Función de agregar complejo a base de datos de usuarios
+function addCompToDBLikeUser() {
+
+  var datosComp = {
+    usuario: usuarioComplejo,
+    nombre: nombreComplejo,
+    email: correoComplejo,
+    contraseña: contraseñaComplejo,
+    fechaN: fechaComplejo,
+    ciudad: localidadComplejo,
+    posicion: { latitud, longitud },
+    role: "complejo"
+  }
+
+  var myId = correoComplejo
+
+  colUsers.doc(myId).set(datosComp)
     .then(function (docRef) {
       console.log("Doc ref con el id = " + myId)
     })
@@ -774,49 +811,11 @@ function hereMaps() {
 
 }
 
-//Función para recuperar opciones selector de canchas formulario
-function optionsCanchasReserva() {
-
-  //Agregando opciones a selector de canchas
-  resComplejo = $$("#reservaComplejo").val()
-  $$("#reservaTipoCancha").html(`<option selected value="---">Seleccione una cancha</option>`)
-  colComplejos.doc(resComplejo).collection("canchas").get()
-  //colComplejos.doc("complejo1").collection("canchas").get()
-    .then(function (response) {
-      opCanchas = []
-      response.forEach(function (doc) {
-        canchas = doc.id
-        opCanchas.push(canchas)
-      })
-      for (i = 0; i < opCanchas.length; i++) {
-        $$("#reservaTipoCancha").append(`<option id="op${opCanchas[i]}" value="${opCanchas[i]}">${opCanchas[i]}</option>`)
-      }
-
-        colComplejos.doc(resComplejo).get()
-        //colComplejos.doc("complejo1").get()
-        .then(function(response){
-          info = response.data()
-          latitud = info.posicion.latitud
-          longitud = info.posicion.longitud
-          $$("#cajaContenedorMapa").removeClass("divContainerMapaHide").addClass("divContainerMapa")
-          $$(".subtituloMapaComp").text(info.nombre)
-          $$(".cajaMapaReserva").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
-          hereMaps()
-        })
-        .catch(function(err) {
-          console.log(err);
-        })
-
-    })
-    .catch(function (err) {
-      console.log(err);
-    })
-}
-//Función para recuperar opciones para formulario
+//Función para recuperar opciones para formulario de reservas
 function optionsDeporteReserva() {
-
   //Agregando opciones a selector de canchas
   resDeporte = $$("#reservaDeporte").val()
+  console.log(resDeporte);
 
   if (resDeporte == "futbol") {
     $$("#reservaComplejo").html(`<option selected value="---">Seleccione un complejo</option>`)
@@ -830,6 +829,8 @@ function optionsDeporteReserva() {
         for (i = 0; i < opComplejos.length; i++) {
           $$("#reservaComplejo").append(`<option id="op${opComplejos[i]}" value="${opComplejos[i]}">${opComplejos[i]}</option>`)
         }
+        console.log(opComplejos);
+        console.log($$("#reservaComplejo"));
       })
       .catch(function (err) {
         console.log(err);
@@ -837,9 +838,49 @@ function optionsDeporteReserva() {
 
   }
 }
+//Función para recuperar opciones selector de canchas formulario y agregado de mapa de localización del complejo
+function optionsCanchasReserva() {
 
+  //Agregando opciones a selector de canchas
+  resComplejo = $$("#reservaComplejo").val()
+  console.log(resComplejo);
+
+  $$("#reservaTipoCancha").html(`<option selected value="---">Seleccione una cancha</option>`)
+  colComplejos.doc(resComplejo).collection("canchas").get()
+    .then(function (response) {
+      opCanchas = []
+      response.forEach(function (doc) {
+        canchas = doc.id
+        console.log(canchas);
+        opCanchas.push(canchas)
+      })
+      for (i = 0; i < opCanchas.length; i++) {
+        $$("#reservaTipoCancha").append(`<option id="op${opCanchas[i]}" value="${opCanchas[i]}">${opCanchas[i]}</option>`)
+      }
+      console.log(opCanchas);
+
+      colComplejos.doc(resComplejo).get()
+        .then(function (response) {
+          info = response.data()
+          latitud = info.posicion.latitud
+          longitud = info.posicion.longitud
+          $$("#cajaContenedorMapa").removeClass("divContainerMapaHide").addClass("divContainerMapa")
+          $$(".subtituloMapaComp").text(info.nombre)
+          $$(".cajaMapaReserva").html(`<div style="width: 100%; height: 100%; border:2px solid #000;" id="mapContainer"></div>`)
+          hereMaps()
+        })
+        .catch(function (err) {
+          console.log(err);
+        })
+
+    })
+    .catch(function (err) {
+      console.log(err);
+    })
+}
+
+//Función para recuperar opciones para formulario en sección complejos
 function optionsSeccionComplejos() {
-
   //Agregando opciones a selector de canchas
   resDeporte = $$("#reservaDeporteSeccComp").val()
 
@@ -859,7 +900,133 @@ function optionsSeccionComplejos() {
       .catch(function (err) {
         console.log(err);
       })
+  }
+}
+//Función para registro de complejos
+
+function registroComplejo() {
+
+  nombreComplejo = $$("#nombreRegComplejo").val()
+  correoComplejo = $$("#mailRegComplejo").val()
+  contraseñaComplejo = $$("#passRegComplejo").val()
+  fechaComplejo = $$("#fechaRegComplejo").val()
+  localidadComplejo = $$("#localidadRegComplejo").val()
+  futbolComplejo = $$("#checkFutbol")[0].checked
+  tenisComplejo = $$("#checkTenis")[0].checked
+  padelComplejo = $$("#checkPadel")[0].checked
+  basketComplejo = $$("#checkBasket")[0].checked
+  usuarioComplejo = $$("#nombreUserRegComplejo").val()
+
+  //Creando usuario de autenticación
+  if (correoComplejo != "" && contraseñaComplejo != "") {
+    firebase.auth().createUserWithEmailAndPassword(correoComplejo, contraseñaComplejo)
+      .then((userCredential) => {
+        // Signed in
+        var user = userCredential.user;
+        console.log("Bienvenid@!!! " + correoComplejo);
+
+        emailSession = correoComplejo
+        mainView.router.navigate('/loggedIn/');
+
+        $$("#cajaBotonUsersModoDev").html()
+
+        addCompToDBLikeUser()
+        sembradoDatosComplejoNuevo()
+
+
+        setTimeout(() => {
+          mainView.router.navigate('/registroTurnosComplejo/');
+        }, 3000)
+
+
+        console.log(`Se acaba de registrar el complejo ${nombreComplejo} en la localidad de ${localidadComplejo}.`);
+      })
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.error(errorCode);
+        console.error(errorMessage);
+        if (errorCode == "auth/email-already-in-use") {
+          console.error(`El email: ${correoComplejo} ya se encuentra registrado. Utilice un nuevo email`);
+        }
+      })
 
   }
+}
+
+//Función para sembrado de datos del complejo en DB estableciendo ruta de canchas
+function sembradoDatosComplejoNuevo() {
+
+  datosComplejo = {
+    ciudad: localidadComplejo,
+    contraseña: contraseñaComplejo,
+    email: correoComplejo,
+    fechaInicio: fechaComplejo,
+    nombre: nombreComplejo,
+    posicion: { latitud, longitud },
+    role: "complejo",
+    usuario: usuarioComplejo,
+    deportes: {
+      futbol: futbolComplejo,
+      tenis: tenisComplejo,
+      padel: padelComplejo,
+      basket: basketComplejo
+    }
+  }
+
+  datosFechaX = { "estado": "libre", "reservadoPor": "" }
+
+  colComplejos.doc(nombreComplejo).set(datosComplejo)
+  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").set({ "Documento registrado": "OK" })
+  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc("fecha x").set({ "Documento registrado": "OK" })
+  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc("fecha x").collection("horas").doc("hora x").set({ "Documento registrado": "OK" })
+  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").set({ "Documento registrado": "OK" })
+  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc("fecha x").set({ "Documento registrado": "OK" })
+  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc("fecha x").collection("horas").doc("hora x").set({ "Documento registrado": "OK" })
+    .then(function (docRef) {
+      console.log("Datos del complejo agregados a DB")
+    })
+    .catch(function (error) {
+      console.log("Error: " + error)
+    })
+
+}
+
+//Función para sembrado de turnos en DB
+function agregarTurnosABaseDatos() {
+
+
+  nuevaFechaTurno = $$("#nuevaFecha").val()
+  tipoDeporteNuevaFecha = $$("#tipoDeporteNuevaFecha").val()
+  tipoCanchaNuevaFecha = $$("#tipoCanchaNuevaFecha").val()
+
+  datosNuevaFecha = { estado: "libre", reservadoPor: "" }
+
+
+  for (hora = 9; hora <= 23; hora++) {
+    colComplejos.doc(nombreComplejo).collection("canchas").doc(`${tipoCanchaNuevaFecha}`).collection("fechas").doc(nuevaFechaTurno).collection("horas").doc(`${hora}`).set(datosNuevaFecha)
+      .then(function (docRef) {
+        console.log("Nueva fecha agregada a DB")
+      })
+      .catch(function (error) {
+        console.log("Error: " + error)
+      })
+  }
+}
+
+function algo() {
+
+  colComplejos.get()
+    .then(function (res) {
+      /*       res.forEach(function(doc){
+              console.log(doc);
+              console.log(doc.id);
+            }) */
+      console.log(res);
+
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
 }
 

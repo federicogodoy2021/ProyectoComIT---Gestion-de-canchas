@@ -1,0 +1,206 @@
+<!-- We don't need a full layout in this file because this page will be parsed with Ajax.  -->
+<div id="paginas" class="page" data-name="registroComplejo">
+
+  <div class="page-content">
+    <div class="block">
+      <!-- -------------------------- Ingreso de nombre -------------------------- -->
+      <div class="grid grid-cols-1">
+        <p class="labelsForm" id="">¿Cuál es el nombre de tu complejo?</p>
+        <div id="cajaInputs" class="list list-strong-ios list-dividers-ios inset-ios">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-media">
+                <i class="icon demo-list-icon"></i>
+              </div>
+              <div class="item-inner">
+                <div id="" class="item-title item-label">Nombre</div>
+                <div class="item-input-wrap">
+                  <input id="nombreRegComplejo" type="text" placeholder="Ingrese su nombre" required validate>
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- -------------------------- Ingreso de email --------------------------- -->
+      <div class="grid grid-cols-1">
+        <p class="labelsForm" id="">¿Cuál es tu Email?</p>
+        <div id="cajaInputs" class="list list-strong-ios list-dividers-ios inset-ios">
+          <ul>
+            <li class="item-content item-input item-input-with-info">
+              <div class="item-media">
+                <i class="icon demo-list-icon"></i>
+              </div>
+              <div class="item-inner">
+                <div id="" class="item-title item-label">Correo Electronico</div>
+                <div class="item-input-wrap">
+                  <input id="mailRegComplejo" type="email" placeholder="Ingresá tu correo" required validate>
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- ------------------------ Ingreso de contraseña ------------------------ -->
+      <div class="grid grid-cols-1">
+        <p class="labelsForm" id="">Ingrese su contraseña</p>
+        <div id="cajaInputs" class="list list-strong-ios list-dividers-ios inset-ios">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-media">
+                <i class="icon demo-list-icon"></i>
+              </div>
+              <div class="item-inner">
+                <div id="" class="item-title item-label">Contraseña</div>
+                <div class="item-input-wrap">
+                  <input id="passRegComplejo" type="password" placeholder="Ingrese su contraseña" required validate>
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid grid-cols-1">
+        <p class="labelsForm" id="">Ingrese nuevamente su contraseña</p>
+        <div id="cajaInputs" class="list list-strong-ios list-dividers-ios inset-ios">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-media">
+                <i class="icon demo-list-icon"></i>
+              </div>
+              <div class="item-inner">
+                <div id="" class="item-title item-label">Contraseña</div>
+                <div class="item-input-wrap">
+                  <input id="pass2RegComplejo" type="password" placeholder="Ingrese su contraseña" required validate>
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- ------------------------ Formato de contraseña ------------------------ -->
+      <div class="grid grid-cols-1 grid-gap">
+        <p class="labelsForm" id="validacionPassRegComp"></p>
+      </div>
+      <!-- --------------------- Ingreso fecha de nacimiento --------------------- -->
+      <div class="grid grid-cols-1">
+        <p class="labelsForm" id="">¿Cuál es la fecha del comienzo de actividades?</p>
+        <div id="cajaInputs" class="list list-strong-ios list-dividers-ios inset-ios">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-media">
+                <i class="icon demo-list-icon"></i>
+              </div>
+              <div class="item-inner">
+                <div class="item-input-wrap">
+                  <input id="fechaRegComplejo" type="date" value="2000-01-01" placeholder="Fecha...">
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- ------------------------ Ingreso de localidad ------------------------- -->
+      <div class="grid grid-cols-1">
+        <p class="labelsForm" id="">¿Cuál es tu localidad?</p>
+        <div id="cajaInputs" class="list list-strong-ios list-dividers-ios inset-ios">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-media">
+                <i class="icon demo-list-icon"></i>
+              </div>
+              <div class="item-inner">
+                <div class="item-input-wrap">
+                  <input id="localidadRegComplejo" type="text" placeholder="Ingrese su localidad" required validate>
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- --------------------- Ingreso de deporte favorito --------------------- -->
+      <div class="grid grid-cols-1">
+        <p class="labelsForm" id="">¿Qué deportes se pueden practicar?</p>
+        <div id="cajaInputs" class="list list-strong-ios list-outline-ios list-dividers-ios">
+          <ul>
+            <li>
+              <label class="item-checkbox item-checkbox-icon-start item-content">
+                <input id="checkFutbol" type="checkbox" name="Futbol"/>
+                <i class="icon icon-checkbox"></i>
+                <div class="item-inner">
+                  <div class="item-title labelsForm">Futbol</div>
+                </div>
+              </label>
+            </li>
+            <li>
+              <label class="item-checkbox item-checkbox-icon-start item-content">
+                <input id="checkTenis" type="checkbox" name="Tenis"/>
+                <i class="icon icon-checkbox"></i>
+                <div class="item-inner">
+                  <div class="item-title labelsForm">Tenis</div>
+                </div>
+              </label>
+            </li>
+            <li>
+              <label class="item-checkbox item-checkbox-icon-start item-content">
+                <input id="checkPadel" type="checkbox" name="Padel" />
+                <i class="icon icon-checkbox"></i>
+                <div class="item-inner">
+                  <div class="item-title labelsForm">Padel</div>
+                </div>
+              </label>
+            </li>
+            <li>
+              <label class="item-checkbox item-checkbox-icon-start item-content">
+                <input id="checkBasket" type="checkbox" name="Basket" />
+                <i class="icon icon-checkbox"></i>
+                <div class="item-inner">
+                  <div class="item-title labelsForm">Basket</div>
+                </div>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </div>
+  <!-- ---------------------- Ingreso nombre de usuario ---------------------- -->
+  <div class="grid grid-cols-1">
+    <p class="labelsForm" id="">Elije un nombre de usuario</p>
+    <div id="cajaInputs" class="list list-strong-ios list-dividers-ios inset-ios">
+      <ul>
+        <li class="item-content item-input">
+          <div class="item-media">
+            <i class="icon demo-list-icon"></i>
+          </div>
+          <div class="item-inner">
+            <div class="item-input-wrap">
+              <input id="nombreUserRegComplejo" type="text" placeholder="Nombre de usuario" required validate>
+              <span class="input-clear-button"></span>
+            </div>
+          </div>
+        </li>
+        <li id="cajaValidacionReg">
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- -------------------- Info sobre nombre de usuario --------------------- -->
+  <div class="grid grid-cols-1 grid-gap">
+    <p id="">El nombre de usuario podras cambiarlo cuando desees</p>
+  </div>
+  <!-- --------------------------- Botón siguiente --------------------------- -->
+  <div class="grid grid-cols-1 grid-gap">
+    <a href="//" id="finRegComp" class="button button-large button-fill button-preloader" class="list-button">Fin de registro</a>
+  </div>
+  <!-- --------------------- Boton para volver al login ---------------------- -->
+  <div class="grid grid-cols-1 grid-gap">
+    <a href="/index/" id="" class="button button-fill color-black cuentaExist">¿Ya tenés una
+      cuenta?</a>
+  </div>
+</div>
+</div>
+</div>
