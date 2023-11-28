@@ -30,7 +30,8 @@ var app = new Framework7({
     { path: '/dataUsers/', url: 'dataUsers.html', options: { transition: 'f7-cover' } },
     { path: '/dataComplejos/', url: 'dataComplejos.html', options: { transition: 'f7-cover' } },
     { path: '/registroComplejo/', url: 'registroComplejo.html', options: { transition: 'f7-cover' } },
-    { path: '/registroTurnosComplejo/', url: 'registroTurnosComplejo.html', options: { transition: 'f7-cover' } }
+    { path: '/modoComplejo/', url: 'modoComplejo.html', options: { transition: 'f7-cover' } },
+    { path: '/seccionReservas/', url: 'seccionReservas.html', options: { transition: 'f7-cover' } }
   ]
   // ... other parameters
 });
@@ -57,7 +58,8 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   $$("#indexIdioma").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
   //Función idioma (Proximamente)
   $$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
-  $$("#btnPrueba").on("click", algo)
+  //Botón de pruebas
+  //$$("#btnPrueba").on("click",)
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -72,7 +74,6 @@ $$(document).on('page:init', '.page[data-name="opReg3"]', function (e) {
 $$(document).on('page:init', '.page[data-name="opReg4"]', function (e) {
   getPositionGPS()
   $$("#op4RegBtnFin").on('click', nuevoRegistroUser)
-
 })
 $$(document).on('page:init', '.page[data-name="loggedIn"]', function (e) {
   $$("#userLoggedIn").text(emailSession)
@@ -84,16 +85,16 @@ $$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
   $$("#reservaDeporte").on("change", optionsDeporteReserva)
 })
 $$(document).on('page:init', '.page[data-name="turnos"]', function (e) {
-
 })
 $$(document).on('page:init', '.page[data-name="confirmacionTurno"]', function (e) {
-  $$("#confirmacionTurno").text(`El turno fue seleccionado para jugar al ${resDeporte} el día ${resFecha} en el complejo ${resComplejo} a las ${horaTurno} Hs.`)
+  $$("#confirmacionTurno").text(`El turno fue seleccionado para jugar al ${resDeporte} el día ${resFecha} en ${resComplejo} a las ${horaTurno} Hs.`)
   $$("#confirmacionMailTurno").text(`Le enviamos un email a ${emailSession} con los datos de la reserva`)
   nuevaBusqueda()
 })
 $$(document).on('page:init', '.page[data-name="seccionComplejos"]', function (e) {
   $$("#gestionbtnBuscar").on('click', buscarturnosComp)
   volverModoDev()
+
   $$("#reservaDeporteSeccComp").on("change", optionsSeccionComplejos)
 })
 $$(document).on('page:init', '.page[data-name="turnosC"]', function (e) {
@@ -114,8 +115,10 @@ $$(document).on('page:init', '.page[data-name="registroComplejo"]', function (e)
   getPositionGPS()
   $$("#finRegComp").on("click", registroComplejo)
 })
-$$(document).on('page:init', '.page[data-name="registroTurnosComplejo"]', function (e) {
-  $$("#agregarFechaComp").on("click", agregarTurnosABaseDatos)
+$$(document).on('page:init', '.page[data-name="modoComplejo"]', function (e) {
+  $$("#cargarReservas").on("click", reservasConfirmadas)
+})
+$$(document).on('page:init', '.page[data-name="seccionReservas"]', function (e) {
 })
 
 /* ----------------------- -------------------------- ----------------------- */
@@ -137,6 +140,9 @@ var resComplejo, resDeporte, resTipoCancha, resFecha, resHora, resFechaGestion, 
 
 //Variables globales registro Complejos
 var nombreComplejo, correoComplejo, contraseñaComplejo, fechaComplejo, localidadComplejo, futbolComplejo, tenisComplejo, padelComplejo, basketComplejo, usuarioComplejo
+
+//Variable Global
+var fechasCreadas
 
 //Funciones
 //Pasar de pantalla donde comienza el paso 1 para registro de usuario
@@ -265,7 +271,7 @@ function inicioSesion() {
               } else if (roleSession == "complejo") {
                 mainView.router.navigate('/loggedIn/');
                 setTimeout(() => {
-                  mainView.router.navigate("/registroTurnosComplejo/")
+                  mainView.router.navigate("/modoComplejo/")
                 }, 3000)
               } else if (roleSession == "dev") {
                 mainView.router.navigate('/loggedIn/');
@@ -491,7 +497,9 @@ function guardarReserva() {
     fechaElegida: resFecha,
     deporteElegido: resDeporte,
     horaElegida: horaTurno,
-    tipoDeCanchaElegida: resTipoCancha
+    tipoDeCanchaElegida: resTipoCancha,
+    complejo: resComplejo
+
   }
   //Id doc en DB
   var idRes = emailSession
@@ -512,6 +520,7 @@ function buscarturnosComp() {
   resFechaGestion = $$("#gestionTurnosFecha").val()
   tipoCanchaSeccComp = $$("#reservaTipoCanchaSeccComp").val()
   if (resFechaGestion !== "") {
+
     mainView.router.navigate('/turnosC/');
     //Se filtran los turnos disponibles en base a la fecha seleccionada
     colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
@@ -563,7 +572,7 @@ function buscarturnosComp() {
         console.log("Error: " + error)
       })
   } else {
-    $$("#gestionCajaValidacionForm").html("<h3>Por favor complete todos los campos del formulario</h3>")
+    $$("#gestionCajaValidacionForm").html(`<h3 class="labelsForm">Por favor complete todos los campos del formulario</h3>`)
   }
 }
 
@@ -815,7 +824,6 @@ function hereMaps() {
 function optionsDeporteReserva() {
   //Agregando opciones a selector de canchas
   resDeporte = $$("#reservaDeporte").val()
-  console.log(resDeporte);
 
   if (resDeporte == "futbol") {
     $$("#reservaComplejo").html(`<option selected value="---">Seleccione un complejo</option>`)
@@ -829,8 +837,6 @@ function optionsDeporteReserva() {
         for (i = 0; i < opComplejos.length; i++) {
           $$("#reservaComplejo").append(`<option id="op${opComplejos[i]}" value="${opComplejos[i]}">${opComplejos[i]}</option>`)
         }
-        console.log(opComplejos);
-        console.log($$("#reservaComplejo"));
       })
       .catch(function (err) {
         console.log(err);
@@ -843,7 +849,6 @@ function optionsCanchasReserva() {
 
   //Agregando opciones a selector de canchas
   resComplejo = $$("#reservaComplejo").val()
-  console.log(resComplejo);
 
   $$("#reservaTipoCancha").html(`<option selected value="---">Seleccione una cancha</option>`)
   colComplejos.doc(resComplejo).collection("canchas").get()
@@ -851,13 +856,11 @@ function optionsCanchasReserva() {
       opCanchas = []
       response.forEach(function (doc) {
         canchas = doc.id
-        console.log(canchas);
         opCanchas.push(canchas)
       })
       for (i = 0; i < opCanchas.length; i++) {
         $$("#reservaTipoCancha").append(`<option id="op${opCanchas[i]}" value="${opCanchas[i]}">${opCanchas[i]}</option>`)
       }
-      console.log(opCanchas);
 
       colComplejos.doc(resComplejo).get()
         .then(function (response) {
@@ -902,10 +905,9 @@ function optionsSeccionComplejos() {
       })
   }
 }
+
 //Función para registro de complejos
-
 function registroComplejo() {
-
   nombreComplejo = $$("#nombreRegComplejo").val()
   correoComplejo = $$("#mailRegComplejo").val()
   contraseñaComplejo = $$("#passRegComplejo").val()
@@ -933,9 +935,8 @@ function registroComplejo() {
         addCompToDBLikeUser()
         sembradoDatosComplejoNuevo()
 
-
         setTimeout(() => {
-          mainView.router.navigate('/registroTurnosComplejo/');
+          mainView.router.navigate('/modoComplejo/');
         }, 3000)
 
 
@@ -954,8 +955,116 @@ function registroComplejo() {
   }
 }
 
+//Función para agregar horarios
+function agregarHorarios() {
+  generadorDeFechas()
+  datosNuevaFecha = { estado: "ocupado", reservadoPor: "" }
+  for (i = 0; i <= 90; i++) {
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("0").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("1").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("2").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("3").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("4").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("5").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("6").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("7").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("8").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("9").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("10").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("11").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("12").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("13").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("14").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("15").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("16").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("17").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("18").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("19").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("20").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("21").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("22").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("23").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("0").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("1").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("2").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("3").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("4").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("5").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("6").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("7").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("8").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("9").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("10").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("11").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("12").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("13").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("14").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("15").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("16").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("17").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("18").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("19").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("20").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("21").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("22").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).collection("horas").doc("23").set(datosNuevaFecha)
+      .then(function (docRef) { colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas) }).catch(function (error) { console.log("Error: " + error) })
+  }
+
+}
+
+
 //Función para sembrado de datos del complejo en DB estableciendo ruta de canchas
 function sembradoDatosComplejoNuevo() {
+
+  generadorDeFechas()
 
   datosComplejo = {
     ciudad: localidadComplejo,
@@ -974,59 +1083,73 @@ function sembradoDatosComplejoNuevo() {
     }
   }
 
-  datosFechaX = { "estado": "libre", "reservadoPor": "" }
-
   colComplejos.doc(nombreComplejo).set(datosComplejo)
-  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").set({ "Documento registrado": "OK" })
-  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc("fecha x").set({ "Documento registrado": "OK" })
-  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc("fecha x").collection("horas").doc("hora x").set({ "Documento registrado": "OK" })
-  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").set({ "Documento registrado": "OK" })
-  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc("fecha x").set({ "Documento registrado": "OK" })
-  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc("fecha x").collection("horas").doc("hora x").set({ "Documento registrado": "OK" })
-    .then(function (docRef) {
-      console.log("Datos del complejo agregados a DB")
-    })
-    .catch(function (error) {
-      console.log("Error: " + error)
-    })
+    .then(function (docRef) { }).catch(function (error) { console.log("Error: " + error) })
 
-}
+  datoOk = { Dato: "OK" }
+  datosFechas = { Dato: "Fecha agregada" }
 
-//Función para sembrado de turnos en DB
-function agregarTurnosABaseDatos() {
+  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").set(datoOk)
+    .then(function (docRef) { }).catch(function (error) { console.log("Error: " + error) })
+  colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").set(datoOk)
+    .then(function (docRef) { }).catch(function (error) { console.log("Error: " + error) })
 
-
-  nuevaFechaTurno = $$("#nuevaFecha").val()
-  tipoDeporteNuevaFecha = $$("#tipoDeporteNuevaFecha").val()
-  tipoCanchaNuevaFecha = $$("#tipoCanchaNuevaFecha").val()
-
-  datosNuevaFecha = { estado: "libre", reservadoPor: "" }
-
-
-  for (hora = 9; hora <= 23; hora++) {
-    colComplejos.doc(nombreComplejo).collection("canchas").doc(`${tipoCanchaNuevaFecha}`).collection("fechas").doc(nuevaFechaTurno).collection("horas").doc(`${hora}`).set(datosNuevaFecha)
+  for (i = 0; i <= 90; i++) {
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 5").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas)
       .then(function (docRef) {
-        console.log("Nueva fecha agregada a DB")
-      })
-      .catch(function (error) {
-        console.log("Error: " + error)
-      })
+      }).catch(function (error) { console.log("Error: " + error) })
+    colComplejos.doc(nombreComplejo).collection("canchas").doc("Futbol 7").collection("fechas").doc(`${fechasCreadas[i]}`).set(datosFechas)
+      .then(function (docRef) {
+      }).catch(function (error) { console.log("Error: " + error) })
   }
+  agregarHorarios()
+  console.log("Fechas agregadas correctamente");
 }
 
-function algo() {
 
-  colComplejos.get()
+//Función para ver reservas confirmadas en modo complejo
+function reservasConfirmadas() {
+
+  colReservas.where("complejo", "==", userSession).get()
     .then(function (res) {
-      /*       res.forEach(function(doc){
-              console.log(doc);
-              console.log(doc.id);
-            }) */
-      console.log(res);
-
+      res.forEach(function (doc) {
+        info = doc.data()
+        $$("#itemReserva").append(`<h3>Reserva confirmada por el usuario ${info.cliente} para el día ${info.fechaElegida} a las ${info.horaElegida} hs en la cancha de ${info.tipoDeCanchaElegida}.</h3>`);
+      })
     })
     .catch(function (error) {
       console.log(error);
     })
 }
+
+//Función para crear fechas
+function generadorDeFechas() {
+
+  fechas = []
+  function generarFechas() {
+    const fechaInicio = new Date('2023-11-27'); // 27 de noviembre de 2023
+    const fechaFin = new Date(fechaInicio);
+    fechaFin.setFullYear(fechaFin.getFullYear() + 1); // Añadir un año
+
+    const fechas = [];
+    let fechaActual = new Date(fechaInicio);
+
+    while (fechaActual <= fechaFin) {
+      const fechaFormateada = obtenerFechaFormateada(fechaActual);
+      fechas.push(fechaFormateada);
+      fechaActual.setDate(fechaActual.getDate() + 1); // Incrementar en un día
+    }
+    return fechas;
+  }
+
+  function obtenerFechaFormateada(fecha) {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  const fechasGeneradas = generarFechas();
+  fechasCreadas = fechasGeneradas
+}
+
 

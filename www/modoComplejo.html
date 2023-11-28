@@ -1,0 +1,69 @@
+<!-- We don't need a full layout in this file because this page will be parsed with Ajax.  -->
+<div id="paginas" class="page" data-name="modoComplejo">
+
+  <!-- -------------------------- Pantalla de modo desarrollador -------------------------- -->
+  <div class="page-content">
+    <div class="navbar">
+      <div id="barraNav" class="navbar-bg"></div>
+      <div class="navbar-inner">
+        <div class="title colorFont">
+          <h2>Modo Complejo</h2>
+        </div>
+        <div class="right">
+          <div class="list accordion-list accordion-opposite">
+            <ul>
+              <li class="accordion-item">
+                <a href="" class="item-link item-content">
+                  <div class="item-inner">
+                    <div class="item-title">
+                      <p class="colorFont labelsForm">Menu</p>
+                    </div>
+                  </div>
+                </a>
+                <div class="accordion-item-content"><a id="btnCerrarSesion" href="/loggedOut/">
+                    <p class="colorFont labelsForm">Cerrar Sesión</p>
+                  </a></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="card">
+        <div class="card-content">
+          <div class="list media-list no-safe-areas">
+            <!-- ------------------------- Lista de funciones -------------------------- -->
+            <ul>
+              <a href="/seccionComplejos/" id="registroTurnosComplejo">
+                <li id="dataBankUsers" class="item-content">
+                  <div class="item-media"><img src="../www/img/reloj.png" width="44" />
+                  </div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title">Gestión de turnos</div>
+                    </div>
+                  </div>
+                </li>
+              </a>
+              <a href="/seccionReservas/" id="cargarReservas">
+                <li id="dataBankUsers" class="item-content">
+                  <div class="item-media"><img src="../www/img/reservaConfirmada.png" width="44" />
+                  </div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title">Reservas confirmadas</div>
+                    </div>
+                  </div>
+                </li>
+              </a>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- -------------------- Boton extra para pruebas -------------------- -->
+    <!-- <div class="grid grid-cols-1 grid-gap">
+        <a href="//" id="btnPrueba" class="button button-fill color-black">BTN PRUEBA</a>
+    </div> -->
+  </div>
