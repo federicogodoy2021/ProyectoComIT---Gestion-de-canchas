@@ -60,7 +60,7 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
   //Función idioma (Proximamente)
   $$("#indexOlviPass").on("click", function () { app.dialog.alert("Sección a implementar proximamente") })
   //Botón de pruebas
-  $$("#btnPrueba").on("click", generadorDeFechas)
+  //$$("#btnPrueba").on("click",)
 })
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="opReg1"]', function (e) {
@@ -119,7 +119,7 @@ $$(document).on('page:init', '.page[data-name="registroComplejo"]', function (e)
 })
 $$(document).on('page:init', '.page[data-name="modoComplejo"]', function (e) {
   $$("#cargarReservas").on("click", reservasConfirmadas)
-  $$("#btnPruebaComp").on("click", generadorDeFechas)
+  //$$("#btnPruebaComp").on("click", )
 })
 $$(document).on('page:init', '.page[data-name="seccionReservas"]', function (e) {
 })
