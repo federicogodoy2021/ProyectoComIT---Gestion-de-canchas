@@ -131,7 +131,7 @@ $$(document).on('page:init', '.page[data-name="reservaManual"]', function (e) {
 
 //Variables globales Datos
 //Usuarios
-var nombre, emailReg, emailSession, passwordReg, passwordReg2, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username
+var nombre, emailReg, emailSession, passwordReg, passwordReg2, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username, idReserva
 //Mapas
 var latitud, longitud, map, platform, pos
 
@@ -292,6 +292,7 @@ function inicioSesion() {
           })
       })
       .catch((error) => {
+
         if (error.message == "The email address is badly formatted.") {
           $$("#cajaValidacion").html(`<h3>El email ingresado posee un formato incorrecto</h3>`)
         } else {
@@ -453,7 +454,8 @@ function buscarCancha() {
               //Se guarda el valor del turno en una variable global
               horaTurno = valor
               //Se toma el turno elegido
-              tomarTurno()
+              confirmacionTomarTurno()
+              //tomarTurno()
             })
           }
         }
@@ -496,7 +498,7 @@ function tomarTurno() {
       //Se guardan los datos de la reserva con el turno tomado
       guardarReserva()
       //Loader reserva turno
-      confirmacionTomarTurno()
+      loaderReservaTurno()
     })
     .catch(function (error) {
       console.log("Error: " + error)
@@ -517,14 +519,15 @@ function guardarReserva() {
   }
   //Id doc en DB
   var idRes = emailSession
-  //Sembrado de datos de reserva en DB
-  colReservas.doc(idRes).set(datosReserva)
-    .then(function (docRef) {
-      console.log("Reserva creada con exito por " + idRes)
-    })
-    .catch(function (error) {
-      console.log("Error: " + error)
-    })
+        //Sembrado de datos de reserva en DB
+        colReservas.doc(`${resFecha}-${horaTurno}-${datosReserva.cliente}`).set(datosReserva)
+          .then(function (docRef) {
+            console.log("Reserva creada con exito por " + emailSession)
+          })
+          .catch(function (error) {
+            console.log("Error: " + error)
+          })
+
 }
 
 //Función para busqueda de turnos a modificar por el complejo
@@ -601,9 +604,6 @@ function cierreSesión() {
 //Función carga de turnos
 function loaderReservaTurno() {
   app.dialog.preloader('Reservando turno...');
-
-  /* $$("#confirmacionTurno").text(`El turno fue seleccionado para jugar al ${resDeporte} el día ${resFecha} en ${resComplejo} a las ${horaTurno} Hs.`)
-  $$("#confirmacionMailTurno").text(`Le enviamos un email a ${emailSession} con los datos de la reserva`) */
 
   setTimeout(function () {
     app.dialog.close();
@@ -686,7 +686,7 @@ function agregarTurnos() {
     function creandoTurno() {
       colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").where("estado", "==", "libre").get()
         .then(function (query) {
-          //Se cambia a estado "ocupado" el turno seleccionado
+          //Se cambia a estado "libre" el turno seleccionado
           turnoSeleccionado = colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaSeccComp).collection("fechas").doc(resFechaGestion).collection("horas").doc(valor)
 
           turnoSeleccionado.update({ estado: "libre" })
@@ -781,10 +781,9 @@ function bankOfComplejos() {
           $$("#dataComplejos").html(`
                           <h3 class="subTituloSeccion">Datos del complejo</h3>
                           <p class="dato">Ciudad: ${complejos[valor].ciudad}</p>
-                          <p class="dato">Fecha de nacimiento: ${complejos[valor].fechaN}</p>
+                          <p class="dato">Inicio de actividades: ${complejos[valor].fechaN}</p>
                           <p class="dato">Usuario: ${complejos[valor].usuario}</p>
                           <p class="dato">Contraseña: ${complejos[valor].contraseña}</p>
-                          <p class="dato">Cantidad de visitas: ${complejos[valor].cantVisitas}</p>
                           <p class="dato">Rol: ${complejos[valor].role}</p>
         `)
           latitud = complejos[valor].posicion.latitud
@@ -1136,16 +1135,47 @@ function reservasConfirmadas() {
   colReservas.where("complejo", "==", userSession).get()
     .then(function (res) {
       reservas = []
+      console.log(reservas);
       res.forEach(function (doc) {
         info = doc.data()
+        console.log(info);
         reservas.push(doc.id)
-        if (reservas.length == 0) {
-          $$("#itemReserva").html(`<h2>No hay reservas realizadas hasta el momento</h2>`);
-        } else {
-          $$("#itemReserva").append(`<h3>Reserva confirmada por el usuario ${info.cliente} para el día ${info.fechaElegida} a las ${info.horaElegida} hs en la cancha de ${info.tipoDeCanchaElegida}.</h3>`);
+
+        cajaBtnAnular = $$(`<div id="R${doc.id}" class="cajaReserva"><h3>Reserva confirmada por el usuario ${info.cliente} para el día ${info.fechaElegida} a las ${info.horaElegida} hs en la cancha de ${info.tipoDeCanchaElegida}.</h3></div>`)
+        btnAnular = $$(`<input id="R${doc.id}" type="button" value="Anular" class="btnAnular button button-small button-round button-fill color-red">`)
+
+          cajaBtnAnular.append(btnAnular)
+          $$("#itemReserva").append(cajaBtnAnular);
+          btnAnular.data("valorId", `R${doc.id}`)
+          btnAnular.on("click", function () {
+            var valor = $$(this).data("valorId")
+            idReserva = valor
+            console.log(idReserva);
+            eliminarReserva()
+            console.log($$("#itemReserva"));
+            
+            documento = valor.slice(1)
+            console.log(documento);
+
+            colReservas.doc(documento).delete()
+            .then(function () {}).catch(function (err) {console.log(err);})
+            colComplejos.doc(userSession).collection("canchas").doc(info.tipoDeCanchaElegida).collection("fechas").doc(info.fechaElegida).collection("horas").doc(info.horaElegida).update({ estado: "turno anulado", reservadoPor: "" })
+            .then(function () {}).catch(function (err) {console.log(err);})
+          })
+        })
+        
+        //Función eliminar reserva
+        function eliminarReserva() {
+          reservaAEliminar = document.querySelector(`[id='${idReserva}']`)
+          console.log(reservaAEliminar);
+          reservaAEliminar.remove()
+          reservasDisponibles = $$("#itemReserva")[0].children.length
+          if(reservasDisponibles == 0){
+            $$("#itemReserva").html(`<h2 class="sinReservas">No hay reservas realizadas hasta el momento</h2>`);
+          }
         }
-      })
-    })
+  
+  })
     .catch(function (error) {
       console.log(error);
     })
@@ -1257,11 +1287,10 @@ function reservasManuales() {
 
 //Función para confirmar turno a tomar
 function confirmacionTomarTurno() {
-  texto = `¿Está seguro que desea tomar el turno de las ${horaTurno} hs.abonando una seña de $1000?`
+  texto = `¿Está seguro que desea tomar el turno de las ${horaTurno} hs. abonando una seña de $1000?`
   titulo = "Confirmación de turno"
 
-  app.dialog.alert(texto, titulo, cerrarAlert)
-  function cerrarAlert() {
-    loaderReservaTurno()
+  app.dialog.confirm(texto, titulo, tomarTurno, app.dialog.close())
+  
   }
-}
+

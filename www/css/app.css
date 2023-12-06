@@ -1211,7 +1211,7 @@ a {
   color: beige;
 }
 #btnAperturaRegComp{
-  background-color: #b3924c;
+  background-color: #eac169;
 
 }
 #textoBtnRegComp{
@@ -1228,5 +1228,18 @@ a {
   width: 100px;
 }
 #itemReserva{
+  text-align: justify;  
+}
+.cajaReserva{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.btnAnular{
+  margin-right: 70px;
+  width: 60px !important
+}
+.sinReservas{
   text-align: center;
 }
