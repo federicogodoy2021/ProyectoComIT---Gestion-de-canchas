@@ -86,10 +86,11 @@ $$(document).on('page:init', '.page[data-name="reserva"]', function (e) {
   $$("#reservaDeporte").on("change", optionsDeporteReserva)
 })
 $$(document).on('page:init', '.page[data-name="turnos"]', function (e) {
+  verTurnos()
+
 })
 $$(document).on('page:init', '.page[data-name="confirmacionTurno"]', function (e) {
-  $$("#confirmacionTurno").text(`El turno fue seleccionado para jugar al ${resDeporte} el día ${resFecha} en ${resComplejo} a las ${horaTurno} Hs.`)
-  $$("#confirmacionMailTurno").text(`Le enviamos un email a ${emailSession} con los datos de la reserva`)
+  datosReservas()
   nuevaBusqueda()
 })
 $$(document).on('page:init', '.page[data-name="seccionComplejos"]', function (e) {
@@ -125,13 +126,14 @@ $$(document).on('page:init', '.page[data-name="seccionReservas"]', function (e) 
 })
 $$(document).on('page:init', '.page[data-name="reservaManual"]', function (e) {
   $$("#reservaManual").on("click", reservasManuales)
+
 })
 
 /* ----------------------- -------------------------- ----------------------- */
 
 //Variables globales Datos
 //Usuarios
-var nombre, emailReg, emailSession, passwordReg, passwordReg2, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username, idReserva
+var nombre, emailReg, emailSession, passwordReg, passwordReg2, roleSession, userSession, passwordSession, guardado, fechaNac, localidad, deporte, frecuenciaJuego, username, idReserva, usuarioResManual, emailLog
 //Mapas
 var latitud, longitud, map, platform, pos
 
@@ -418,55 +420,68 @@ function buscarCancha() {
   resFecha = $$("#reservaFecha").val()
 
   if (resComplejo !== "---" && resDeporte !== "---" && resTipoCancha !== "---" && resFecha !== "") {
-    mainView.router.navigate('/turnos/');
-    //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
 
-    colComplejos.doc(resComplejo).collection("canchas").doc(resTipoCancha).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
-      .then(function (result) {
-        //Se retornan los turnos disponibles
-        var turnos = []
-        result.forEach(function (doc) {
-          id = doc.id;
-          id = parseInt(id);
-          turnos.push(id)
-          turnos.sort(function (a, b) { return a - b })
-          query = doc.data()
-        })
-        if (turnos.length == 0) {
-          cajaFechaTurnos = $$("#cajaFechaTurnos")
-          cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
-
-        } else {
-          $$("#fechaTurno").text(`Turnos disponibles ${resFecha}`)
-          //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
-          for (i = 0; i < turnos.length; i++) {
-            divTurnos = $$("#turnosDisponibles")
-            var turno = turnos[i];
-            boton = $$(`
-                        <li>
-                          <input type="button" id="turno" value="${turno}HS" class="button button-small button-outline color-green"></input><br>
-                        </li>
-                        `)
-            divTurnos.append(boton)
-            boton.data("valor", `${turno}`)
-            boton.on("click", function () {
-              var valor = $$(this).data("valor");
-              //Se guarda el valor del turno en una variable global
-              horaTurno = valor
-              //Se toma el turno elegido
-              confirmacionTomarTurno()
-              //tomarTurno()
-            })
-          }
-        }
-      })
-      .catch(function (error) {
-        console.log("Error: " + error)
-      })
+    verTurnos()
+    
   } else {
     $$("#cajaValidacionForm").html("<h3>Por favor complete todos los campos del formulario</h3>")
   }
 }
+
+//Función ver turnos disponibles y tomar un turno
+function verTurnos (){
+
+  mainView.router.navigate('/turnos/');
+
+  if(roleSession == "normal user"){
+    $$("#volverBusqueda").attr("href", "/reserva/");
+  }else if(roleSession == "complejo"){
+    $$("#volverBusqueda").attr("href", "/reservaManual/");
+  }
+
+  //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
+  colComplejos.doc(resComplejo).collection("canchas").doc(resTipoCancha).collection("fechas").doc(resFecha).collection("horas").where("estado", "==", "libre").get()
+    .then(function (result) {
+      //Se retornan los turnos disponibles
+      var turnos = []
+      result.forEach(function (doc) {
+        id = doc.id;
+        id = parseInt(id);
+        turnos.push(id)
+        turnos.sort(function (a, b) { return a - b })
+        query = doc.data()
+      })
+      if (turnos.length == 0) {
+        cajaFechaTurnos = $$("#cajaFechaTurnos")
+        cajaFechaTurnos.text("No hay turnos disponibles para la fecha seleccionada")
+
+      } else {
+        $$("#fechaTurno").text(`Turnos disponibles ${resFecha}`)
+        //Se despliegan los turnos disponibles en formato de botones para ser seleccionados
+        for (i = 0; i < turnos.length; i++) {
+          divTurnos = $$("#turnosDisponibles")
+          var turno = turnos[i];
+          boton = $$(`
+                      <li>
+                        <input type="button" id="turno" value="${turno}HS" class="button button-small button-outline color-green"></input><br>
+                      </li>
+                      `)
+          divTurnos.append(boton)
+          boton.data("valor", `${turno}`)
+          boton.on("click", function () {
+            var valor = $$(this).data("valor");
+            //Se guarda el valor del turno en una variable global
+            horaTurno = valor
+            //Se toma el turno elegido
+            confirmacionTomarTurno()
+          })
+        }
+      }
+    })
+    .catch(function (error) {
+      console.log("Error: " + error)
+    })
+  }
 
 //Función para volver a pantalla de reservas
 function nuevaBusqueda() {
@@ -601,7 +616,20 @@ function cierreSesión() {
     mainView.router.navigate("/index/")
   }, 3000)
 }
-//Función carga de turnos
+//Función para pasar datos de la reseva
+function datosReservas() {
+  if(roleSession == "normal user"){
+    $$("#confirmacionMailTurno").text(`Le enviamos un email a ${emailSession} con los datos de la reserva`)
+    $$("#confirmacionTurno").text(`El turno fue seleccionado para jugar al ${resDeporte} el día ${resFecha} en ${resComplejo} a las ${horaTurno} Hs.`)
+  } else if(roleSession == "complejo"){
+    $$("#confirmacionMailTurno").text(`Se creó una reserva con exito para el usuario ${usuarioResManual}.`)
+    $$("#confirmacionTurno").text(`El turno fue seleccionado para jugar al ${resDeporte} el día ${resFecha} en ${resComplejo} a las ${horaTurno} Hs.`)
+    //Recupero variable emailSession
+    emailSession = emailLog
+  }
+}
+
+//Función loader para reservas
 function loaderReservaTurno() {
   app.dialog.preloader('Reservando turno...');
 
@@ -949,6 +977,7 @@ function registroComplejo() {
 
         emailSession = correoComplejo
         userSession = nombreComplejo
+        roleSession = "complejo"
         mainView.router.navigate('/loggedIn/');
 
         $$("#cajaBotonUsersModoDev").html()
@@ -1243,52 +1272,34 @@ function reservasManuales() {
   usuarioResManual = $$("#usuarioReservaManual").val()
   fechaResManual = $$("#fechaReservaManual").val()
   tipoCanchaResManual = $$("#reservaTipoCanchaSeccComp").val()
-  horaResManual = $$("#horaReservaManual").val()
+  
 
-  if (usuarioResManual == "" || fechaResManual == "" || tipoCanchaResManual == "---" || horaResManual == "") {
+  emailLog = emailSession
+
+  emailSession = usuarioResManual
+  resFecha = fechaResManual
+  resDeporte = tipoCanchaResManual
+  resTipoCancha = tipoCanchaResManual
+  resComplejo = userSession
+
+  if(usuarioResManual == "" || fechaResManual == "" ||  tipoCanchaResManual == "---"){
     $$("#validacionFormReservaManual").html("<h3>Por favor complete todos los campos del formulario</h3>")
-  } else {
-
-    //Se filtran los turnos disponibles en base al complejo seleccionado y la fecha seleccionada
-    colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaResManual).collection("fechas").doc(fechaResManual).collection("horas").doc(horaResManual).get()
-      .then(function (query) {
-        estadoTurno = query._delegate._document.data.value.mapValue.fields.estado.stringValue
-
-        if (estadoTurno == "libre") {
-          turnoSeleccionado = colComplejos.doc(userSession).collection("canchas").doc(tipoCanchaResManual).collection("fechas").doc(fechaResManual).collection("horas").doc(horaResManual)
-          //Se cambia a estado "turno reservado manualmente" el turno seleccionado
-          turnoSeleccionado.update({ estado: "turno reservado manualmente", reservadoPor: usuarioResManual })
-
-          emailSession = usuarioResManual
-          resFecha = fechaResManual
-          resDeporte = tipoCanchaResManual
-          horaTurno = horaResManual
-          resTipoCancha = tipoCanchaResManual
-          resComplejo = userSession
-
-          guardarReserva()
-
-          app.dialog.preloader('Reservando turno...');
-          setTimeout(function () {
-            app.dialog.close();
-            //Se pasa a la pantalla de confirmación del turno
-            mainView.router.navigate('/confirmacionTurno/')
-          }, 5000);
-
-        } else (
-          app.dialog.alert(`El horario ${horaResManual}hs. no se encuentra disponible. Seleccione otro horario.`)
-        )
-      })
-      .catch(function (error) {
-        console.log("Error: " + error)
-      })
   }
+
+  verTurnos()
 }
 
 //Función para confirmar turno a tomar
 function confirmacionTomarTurno() {
-  texto = `¿Está seguro que desea tomar el turno de las ${horaTurno} hs. abonando una seña de $1000?`
-  titulo = "Confirmación de turno"
+
+  if(roleSession  == "complejo"){
+    texto = `Ud. va a confirmar un turno manual para las ${horaTurno} hs.`
+    titulo = "Confirmación de turno"  
+  }else{
+    texto = `¿Está seguro que desea tomar el turno de las ${horaTurno} hs. abonando una seña de $1000?`
+    titulo = "Confirmación de turno"
+  }
+
 
   app.dialog.confirm(texto, titulo, tomarTurno, app.dialog.close())
   
